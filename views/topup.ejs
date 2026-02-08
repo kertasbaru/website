@@ -167,12 +167,12 @@
             };
 
             const showModal = (modal) => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
-            const hideModalEl = (modal) => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
+            const hideModal = (modal) => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
 
             const closeModal = () => {
                 if (pollingInterval) clearInterval(pollingInterval);
-                hideModalEl(qrisModal);
-                hideModalEl(verificationModal);
+                hideModal(qrisModal);
+                hideModal(verificationModal);
             };
 
             const showQrisModal = (data) => {
@@ -245,11 +245,11 @@
             // Modal Actions
             closeModalBtn.addEventListener('click', closeModal);
             cancelPaymentBtn.addEventListener('click', () => {
-                hideModalEl(qrisModal);
+                hideModal(qrisModal);
                 showModal(verificationModal);
             });
             declineCancelBtn.addEventListener('click', () => {
-                hideModalEl(verificationModal);
+                hideModal(verificationModal);
                 showModal(qrisModal);
             });
             

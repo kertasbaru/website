@@ -80,7 +80,7 @@
 
     <div id="historyQrisModal" class="hidden fixed inset-0 z-[3000] overflow-auto bg-black/50 backdrop-blur-sm pt-[60px]">
         <div class="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown mt-[5%]">
-             <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition" onclick="document.getElementById('historyQrisModal').classList.add('hidden');document.getElementById('historyQrisModal').classList.remove('flex')">&times;</span>
+             <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition" id="closeHistoryQrisBtn">&times;</span>
             <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl">Scan Pembayaran</h3>
             <div class="flex justify-center">
                 <div id="historyQrisContainer" class="p-4 bg-white rounded-xl border border-gray-200"></div>
@@ -185,12 +185,13 @@
             
             const copyTxDetailBtn = document.getElementById('copyTxDetailBtn');
             const closeTxDetailHistoryBtn = document.getElementById('closeTxDetailHistoryBtn');
+            const closeHistoryQrisBtn = document.getElementById('closeHistoryQrisBtn');
 
             let currentFilterType = '';
 
             // --- Modal Helpers ---
             const showModal = (modal) => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
-            const hideModalEl = (modal) => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
+            const hideModal = (modal) => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
 
             // --- Helper Functions ---
             const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
@@ -412,24 +413,25 @@ Terima Kasih!`;
             
             topupDateFilterBtn.addEventListener('click', () => { currentFilterType = 'topup'; showModal(dateFilterModal); });
             txDateFilterBtn.addEventListener('click', () => { currentFilterType = 'transaction'; showModal(dateFilterModal); });
-            closeDateModalBtn.addEventListener('click', () => hideModalEl(dateFilterModal));
+            closeDateModalBtn.addEventListener('click', () => hideModal(dateFilterModal));
             
             applyDateFilterBtn.addEventListener('click', () => {
                 const start = startDateInput.value; const end = endDateInput.value;
                 if (!start || !end) return alert('Pilih tanggal.');
                 const endD = new Date(end); endD.setHours(23, 59, 59, 999);
                 fetchHistory(currentFilterType, currentFilterType==='topup'?topupSearchInput.value:txSearchInput.value, new Date(start).toISOString(), endD.toISOString());
-                hideModalEl(dateFilterModal);
+                hideModal(dateFilterModal);
             });
 
             // --- Tutup Modal ---
             const hideModals = () => {
-                hideModalEl(dateFilterModal);
-                hideModalEl(txDetailHistoryModal);
-                hideModalEl(historyQrisModal);
+                hideModal(dateFilterModal);
+                hideModal(txDetailHistoryModal);
+                hideModal(historyQrisModal);
             };
             
             closeTxDetailHistoryBtn.addEventListener('click', hideModals);
+            closeHistoryQrisBtn.addEventListener('click', () => hideModal(historyQrisModal));
             window.addEventListener('click', (e) => {
                 if([dateFilterModal, txDetailHistoryModal, historyQrisModal].includes(e.target)) hideModals();
             });
