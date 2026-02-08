@@ -5,36 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XL Authentication - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content">
-        <div class="profile-card">
-            <h2><i class="fas fa-key"></i> Autentikasi XL</h2>
-            <p id="subtitle" class="topup-subtitle">Kelola login nomor XL Anda (Minta OTP, Login, Cek Sesi).</p>
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden">
+            <h2 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl"><i class="fas fa-key"></i> Autentikasi XL</h2>
+            <p id="subtitle" class="text-gray-500 dark:text-slate-400 text-sm mb-4">Kelola login nomor XL Anda (Minta OTP, Login, Cek Sesi).</p>
             
             <div id="message-display" class="tembak-info-box" style="display: none; margin-bottom: 15px;"></div>
             
             <div id="form-container">
                 <form id="xlAuthForm" onsubmit="return false;">
-                    <div class="form-group">
-                        <label for="nomorInput">Nomor XL</label>
-                        <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 0878..." class="form-input" required>
+                    <div class="mb-5 text-left">
+                        <label for="nomorInput" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor XL</label>
+                        <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 0878..." class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" required>
                     </div>
                     
-                    <div id="otp-group" class="form-group" style="display: none;">
-                        <label for="otpInput">Kode OTP</label>
-                        <input type="text" id="otpInput" name="otp" placeholder="Masukkan 6 digit kode OTP" class="form-input" maxlength="6" pattern="\d{6}" style="text-align: center; letter-spacing: 5px; font-size: 1.1rem;">
+                    <div id="otp-group" class="mb-5 text-left" style="display: none;">
+                        <label for="otpInput" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Kode OTP</label>
+                        <input type="text" id="otpInput" name="otp" placeholder="Masukkan 6 digit kode OTP" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" maxlength="6" pattern="\d{6}" style="text-align: center; letter-spacing: 5px; font-size: 1.1rem;">
                         <small style="color: #888;">Cek SMS di HP Anda.</small>
                     </div>
                 </form>
@@ -46,8 +42,8 @@
             </div>
         </div>
         
-        <div id="quota-results-container" class="profile-card" style="display: none; margin-top: 20px;">
-            <h3><i class="fas fa-box-open"></i> Detail Paket & Kuota</h3>
+        <div id="quota-results-container" class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden" style="display: none; margin-top: 20px;">
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-lg"><i class="fas fa-box-open"></i> Detail Paket & Kuota</h3>
             <div id="quota-list" style="margin-top: 15px;">
                 <div class="spinner" style="margin: 20px auto;"></div>
             </div>
