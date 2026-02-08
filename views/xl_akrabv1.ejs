@@ -5,37 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XL Akrab V1 - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content">
-        <div class="profile-card">
-            <h2><i class="fas fa-users"></i> XL Akrab V1</h2>
-            <p class="topup-subtitle">Masukkan nomor XL yang ingin diundang ke grup Akrab.</p>
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden">
+            <h2 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl"><i class="fas fa-users"></i> XL Akrab V1</h2>
+            <p class="text-gray-500 dark:text-slate-400 text-sm mb-4">Masukkan nomor XL yang ingin diundang ke grup Akrab.</p>
             
             <div id="message-display" class="tembak-info-box" style="display: none; margin-bottom: 15px;"></div>
             
             <form id="checkAkrabForm" onsubmit="return false;">
-                <div class="form-group">
-                    <label for="nomorInput">Nomor XL Target</label>
-                    <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 0878..." class="form-input" autocomplete="off" required>
+                <div class="mb-5 text-left">
+                    <label for="nomorInput" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor XL Target</label>
+                    <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 0878..." class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" autocomplete="off" required>
                 </div>
             </form>
         </div>
 
-        <div id="products-container" class="profile-card" style="display: none; margin-top: 20px;">
-            <h3><i class="fas fa-box-open"></i> Stok Produk Akrab</h3>
-            <div class="tab-container">
+        <div id="products-container" class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden" style="display: none; margin-top: 20px;">
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-lg"><i class="fas fa-box-open"></i> Stok Produk Akrab</h3>
+            <div class="flex gap-2 flex-wrap mt-4 border-b border-gray-200 dark:border-slate-700 pb-2">
                 <button class="tab-button active" data-tab="fresh">Fresh</button>
                 <button class="tab-button" data-tab="bekasan">Bekasan</button>
             </div>
@@ -46,56 +42,56 @@
         </div>
     </main>
 
-    <div id="akrabModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn">&times;</span>
+    <div id="akrabModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
             
             <div id="buyView">
-                <h3>KONFIRMASI INVITE</h3>
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">KONFIRMASI INVITE</h3>
                 <hr style="margin-bottom: 20px; border-color: var(--border-color-light);">
                 <form id="buyForm" data-code="">
-                    <div class="form-group">
-                        <label>Nama Produk</label>
-                        <input id="modalAkrabNama" class="form-input" type="text" readonly disabled>
+                    <div class="mb-5 text-left">
+                        <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Produk</label>
+                        <input id="modalAkrabNama" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled>
                     </div>
-                    <div class="form-group">
-                        <label>Nomor Target</label>
-                        <input id="modalAkrabNomor" class="form-input" type="text" readonly disabled>
+                    <div class="mb-5 text-left">
+                        <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor Target</label>
+                        <input id="modalAkrabNomor" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled>
                     </div>
-                    <div class="form-group">
-                        <label>Nama Pengelola (Wajib Diisi)</label>
-                        <input id="modalAkrabParentName" class="form-input" type="text" required placeholder="Contoh: Asep">
+                    <div class="mb-5 text-left">
+                        <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Pengelola (Wajib Diisi)</label>
+                        <input id="modalAkrabParentName" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" required placeholder="Contoh: Asep">
                     </div>
-                    <div class="form-group">
-                        <label>Harga</label>
-                        <input id="modalAkrabHarga" class="form-input" type="text" readonly disabled style="color: var(--primary-color); font-weight: 700;">
+                    <div class="mb-5 text-left">
+                        <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Harga</label>
+                        <input id="modalAkrabHarga" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled style="color: var(--primary-color); font-weight: 700;">
                     </div>
-                    <div class="form-group">
-                        <label>Deskripsi</label>
-                        <div id="modalDescription" class="description-box"></div>
+                    <div class="mb-5 text-left">
+                        <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Deskripsi</label>
+                        <div id="modalDescription" class="description-box bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-4 text-sm text-gray-600 dark:text-slate-300 max-h-40 overflow-y-auto"></div>
                     </div>
-                    <div class="modal-button-container">
-                        <button type="button" class="btn closeModalBtn btn-danger">Batal</button>
-                        <button type="submit" id="buyButton" class="btn btn-success">Proses Invite</button>
+                    <div class="flex gap-4 mt-6">
+                        <button type="button" class="btn closeModalBtn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                        <button type="submit" id="buyButton" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Proses Invite</button>
                     </div>
                 </form>
             </div>
 
             <div id="detailView" style="display: none;">
-                <div class="modal-title-container">
-                    <h3>DETAIL TRANSAKSI</h3>
+                <div class="relative">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">DETAIL TRANSAKSI</h3>
                     <div class="loading-line"></div>
                 </div>
                 <hr style="margin-bottom: 20px; border-color: var(--border-color-light);">
                 <form id="detailForm">
-                    <div class="form-group"><label>Ref ID</label><input id="detailRefId" class="form-input" readonly disabled></div>
-                    <div class="form-group"><label>Nomor</label><input id="detailNomor" class="form-input" readonly disabled></div>
-                    <div class="form-group"><label>Nama Produk</label><input id="detailNamaProduk" class="form-input" readonly disabled></div>
-                    <div class="form-group"><label>Nama Pengelola</label><input id="detailParentName" class="form-input" readonly disabled></div>
-                    <div class="form-group"><label>Harga</label><input id="detailHarga" class="form-input" readonly disabled></div>
-                    <div class="form-group"><label>Status</label><input id="detailStatus" class="form-input" readonly disabled style="font-weight: bold;"></div>
-                    <div class="form-group"><label>Pesan Provider</label><textarea id="detailMessage" class="form-input" readonly disabled rows="2"></textarea></div>
-                    <button type="button" class="btn closeModalBtn btn-secondary" style="margin-top: 15px;">Tutup</button>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Ref ID</label><input id="detailRefId" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor</label><input id="detailNomor" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Produk</label><input id="detailNamaProduk" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Pengelola</label><input id="detailParentName" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Harga</label><input id="detailHarga" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Status</label><input id="detailStatus" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled style="font-weight: bold;"></div>
+                    <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Pesan Provider</label><textarea id="detailMessage" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" readonly disabled rows="2"></textarea></div>
+                    <button type="button" class="btn closeModalBtn w-full py-3.5 rounded-xl bg-gray-500 text-white font-semibold shadow-lg shadow-gray-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer" style="margin-top: 15px;">Tutup</button>
                 </form>
             </div>
         </div>
