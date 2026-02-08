@@ -5,59 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content admin-container">
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10 flex flex-col gap-5">
         
-        <div class="admin-top-buttons">
-            <button id="serverBtn" class="btn btn-info" disabled>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-2.5">
+            <button id="serverBtn" class="btn w-full py-3.5 rounded-xl bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer" disabled>
                 <i class="fas fa-server"></i> SERVER (Maintenance)
             </button>
-            <button id="noOtpBtn" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+            <button id="noOtpBtn" class="btn w-full py-3.5 rounded-xl text-white font-semibold shadow-lg hover:-translate-y-0.5 transition border-none cursor-pointer" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
                 <i class="fas fa-plus-circle"></i> Produk No OTP
             </button>
         </div>
 
-        <div class="announcement-card">
-            <h2><i class="fas fa-bullhorn"></i> Pengumuman Saat Ini</h2>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden">
+            <h2 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl"><i class="fas fa-bullhorn"></i> Pengumuman Saat Ini</h2>
             <div id="current-announcement" style="font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap;">Memuat...</div>
             
-            <button id="editAnnouncementBtn" class="edit-announcement-btn">
+            <button id="editAnnouncementBtn" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-indigo-500 text-white border-none cursor-pointer flex items-center justify-center hover:bg-indigo-600 transition">
                 <i class="fas fa-pen"></i>
             </button>
         </div>
 
-        <div class="admin-sidebar">
-            <h4><i class="fas fa-database"></i> Database Tables</h4>
-            <ul id="table-list">
+        <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm dark:shadow-none">
+            <h4 class="mt-0 pb-4 border-b border-dashed border-gray-200 dark:border-slate-700 text-lg text-gray-500 dark:text-slate-400 uppercase tracking-wider"><i class="fas fa-database"></i> Database Tables</h4>
+            <ul id="table-list" class="list-none p-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-4">
                 <div class="spinner" style="margin: 10px auto;"></div>
             </ul>
         </div>
 
-        <div class="admin-content">
-            <div class="profile-card" id="data-display-card" style="display: none;">
-                <h3 id="current-table-title" style="border-bottom: none; margin-bottom: 15px;">Data Tabel</h3>
+        <div class="mt-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden" id="data-display-card" style="display: none;">
+                <h3 id="current-table-title" class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-lg" style="border-bottom: none;">Data Tabel</h3>
                 
-                <div class="filter-container" style="padding: 0; margin-bottom: 15px;">
-                    <div class="form-group" style="flex-grow: 1;">
-                        <input type="text" id="searchInput" class="form-input" placeholder="Cari data...">
+                <div class="flex gap-4 items-end mb-4">
+                    <div class="flex-grow">
+                        <input type="text" id="searchInput" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" placeholder="Cari data...">
                     </div>
-                    <button id="searchBtn" class="btn btn-small btn-view"><i class="fas fa-search"></i> Cari</button>
+                    <button id="searchBtn" class="inline-flex items-center justify-center w-8 h-8 p-0 rounded-full bg-blue-500 text-white shadow-none border-none cursor-pointer"><i class="fas fa-search"></i></button>
                 </div>
 
-                <div class="table-responsive-wrapper">
-                    <table class="deposit-table">
+                <div class="w-full overflow-x-auto border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <table class="w-full border-collapse text-[0.95rem]">
                         <thead id="data-table-head"></thead>
                         <tbody id="data-table-body"></tbody>
                     </table>
@@ -71,52 +67,52 @@
         </div>
     </main>
 
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn">&times;</span>
-            <h3>Edit Data</h3>
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Edit Data</h3>
             <form id="editForm">
                 <div id="edit-form-fields" style="max-height: 400px; overflow-y: auto;"></div>
-                <div class="modal-button-container">
-                    <button type="button" class="btn btn-danger closeModalBtn">Batal</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="btn closeModalBtn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                    <button type="submit" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="noOtpModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn">&times;</span>
-            <h3>Tambah Produk</h3>
+    <div id="noOtpModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Tambah Produk</h3>
             <form id="noOtpForm">
-                <div class="form-group"><label>ID Produk</label><input type="text" name="product_id" class="form-input" required></div>
-                <div class="form-group"><label>Nama Produk</label><input type="text" name="product_name" class="form-input" required></div>
-                <div class="form-group"><label>Harga</label><input type="number" name="amount" class="form-input" required></div>
-                <div class="form-group"><label>Kategori</label><input type="text" name="category" class="form-input"></div>
-                <div class="form-group"><label>Provider</label><input type="text" name="provider" class="form-input"></div>
-                <div class="form-group"><label>Deskripsi</label><textarea name="description" class="form-input" rows="2"></textarea></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">ID Produk</label><input type="text" name="product_id" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" required></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Produk</label><input type="text" name="product_name" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" required></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Harga</label><input type="number" name="amount" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" required></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Kategori</label><input type="text" name="category" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition"></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Provider</label><input type="text" name="provider" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition"></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Deskripsi</label><textarea name="description" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" rows="2"></textarea></div>
                 
-                <div class="modal-button-container">
-                    <button type="button" class="btn btn-danger closeModalBtn">Tutup</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="btn closeModalBtn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Tutup</button>
+                    <button type="submit" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="editAnnouncementModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn">&times;</span>
-            <h3>Edit Pengumuman</h3>
+    <div id="editAnnouncementModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Edit Pengumuman</h3>
             <form id="announcementForm">
-                <div class="form-group">
-                    <label>Isi Pengumuman</label>
-                    <textarea id="announcementInput" name="announcement" class="form-input" rows="6"></textarea>
+                <div class="mb-5 text-left">
+                    <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Isi Pengumuman</label>
+                    <textarea id="announcementInput" name="announcement" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" rows="6"></textarea>
                 </div>
-                <div class="modal-button-container">
-                    <button type="button" class="btn btn-danger closeModalBtn">Batal</button>
-                    <button type="submit" class="btn btn-success">Update</button>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="btn closeModalBtn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                    <button type="submit" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Update</button>
                 </div>
             </form>
         </div>
