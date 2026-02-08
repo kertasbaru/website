@@ -1,12 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
-const fs = require('fs');
-const path = require('path');
 const { isAuthenticated } = require('../middleware/auth.js');
-
-// Memuat konfigurasi untuk pengecekan admin
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
 
 // Helper Database: Ambil satu baris data
 const dbGet = async (sql, params = []) => {
@@ -28,7 +23,7 @@ const renderWithUserData = async (req, res, view) => {
         if (!user) return res.redirect('/login');
         
         // Tentukan status admin
-        const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
+        const isAdmin = user.email === process.env.ADMIN_EMAIL && user.username === process.env.ADMIN_USERNAME;
         
         // Render halaman dengan data user
         res.render(view, { 
@@ -113,7 +108,7 @@ router.get('/admin', isAuthenticated, async (req, res) => {
         if (!user) return res.redirect('/login');
         
         // Cek manual kredensial admin
-        const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
+        const isAdmin = user.email === process.env.ADMIN_EMAIL && user.username === process.env.ADMIN_USERNAME;
         
         // Jika bukan admin, tendang balik ke dashboard user biasa
         if (!isAdmin) return res.redirect('/dashboard');

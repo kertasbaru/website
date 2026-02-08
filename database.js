@@ -1,37 +1,15 @@
 // Mengimpor library yang dibutuhkan
 const mysql = require('mysql2/promise'); // Driver MySQL yang mendukung async/await (promise)
-const fs = require('fs');                // Modul File System untuk membaca file
-const path = require('path');            // Modul Path untuk menangani path direktori
-
-let config = {};
-try {
-    // Menentukan lokasi file .vars.json (berada di folder yang sama dengan script ini)
-    const configPath = path.join(__dirname, '.vars.json');
-    
-    // Membaca file .vars.json secara sinkron dan mengubahnya menjadi objek JavaScript
-    config = JSON.parse(fs.readFileSync(configPath));
-    
-    // Validasi: Memastikan konfigurasi MYSQL ada di dalam file
-    if (!config.MYSQL) {
-        throw new Error('Konfigurasi MYSQL tidak ditemukan di dalam .vars.json.');
-    }
-} catch (error) {
-    // Jika terjadi error saat membaca config, tampilkan pesan dan hentikan program
-    console.error('❌ Gagal membaca konfigurasi:', error.message);
-    process.exit(1);
-}
-
-// Mengambil objek konfigurasi spesifik untuk database
-const dbConfig = config.MYSQL;
+require('dotenv').config();              // Memuat variabel lingkungan dari file .env
 
 // Membuat Connection Pool (kumpulan koneksi)
 // Pool lebih efisien daripada membuat koneksi baru setiap kali request masuk
 const pool = mysql.createPool({
-    host: dbConfig.HOST,
-    user: dbConfig.USERNAME,
-    password: dbConfig.PASSWORD,
-    database: dbConfig.DATABASE,
-    port: dbConfig.PORT,
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USERNAME,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT,
     waitForConnections: true, // Menunggu jika semua koneksi sedang terpakai
     connectionLimit: 10,      // Batas maksimal koneksi yang aktif bersamaan
     queueLimit: 0             // Batas antrian request koneksi (0 = tidak terbatas)

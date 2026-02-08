@@ -2,11 +2,11 @@ const axios = require('axios'); // Library untuk melakukan HTTP Request
 
 // Fungsi 1: Mengambil stok produk "Akrab" dari Provider Flaz
 // Digunakan untuk mengetahui apakah layanan sedang tersedia sebelum user membeli
-async function getAkrabStockFlaz(config) {
+async function getAkrabStockFlaz() {
     try {
         // Melakukan POST request ke endpoint cek stok
-        const response = await axios.post(`${config.URL.FLAZ}/mpa/product-stock`, {}, { 
-            headers: { 'x-api-key': config.API.FLAZ } // Menggunakan API Key dari config
+        const response = await axios.post(`${process.env.URL_FLAZ}/mpa/product-stock`, {}, { 
+            headers: { 'x-api-key': process.env.API_FLAZ } // Menggunakan API Key dari env
         });
         return response.data; // Mengembalikan data stok dari API
     } catch (error) {
@@ -17,11 +17,11 @@ async function getAkrabStockFlaz(config) {
 
 // Fungsi 2: Mengundang member ke grup Akrab (Proses Transaksi Utama)
 // Data yang dikirim biasanya berisi nomor HP tujuan dan jenis paket
-async function inviteAkrabMember(data, config) {
+async function inviteAkrabMember(data) {
     try {
         // Melakukan POST request untuk eksekusi invite member
-        const response = await axios.post(`${config.URL.FLAZ}/mpa/invite-member`, data, { 
-            headers: { 'x-api-key': config.API.FLAZ } 
+        const response = await axios.post(`${process.env.URL_FLAZ}/mpa/invite-member`, data, { 
+            headers: { 'x-api-key': process.env.API_FLAZ } 
         });
         return response.data; // Mengembalikan respon sukses/gagal dari API
     } catch (error) {
@@ -31,11 +31,11 @@ async function inviteAkrabMember(data, config) {
 
 // Fungsi 3: Mengecek status transaksi (Cek Status)
 // Berguna untuk sinkronisasi status transaksi (Pending -> Sukses/Gagal)
-async function getTransactionInfoFlaz(trx_id, config) {
+async function getTransactionInfoFlaz(trx_id) {
     try {
         // Mengirim trx_id ke API untuk mendapatkan status terkini
-        const response = await axios.post(`${config.URL.FLAZ}/info/trx-id`, { trx_id }, { 
-            headers: { 'x-api-key': config.API.FLAZ } 
+        const response = await axios.post(`${process.env.URL_FLAZ}/info/trx-id`, { trx_id }, { 
+            headers: { 'x-api-key': process.env.API_FLAZ } 
         });
         return response.data;
     } catch (error) {

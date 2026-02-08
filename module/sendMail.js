@@ -1,15 +1,15 @@
 const { Resend } = require('resend'); // Mengimpor library Resend
 
 // Fungsi 1: Mengirim Kode OTP via Resend
-async function sendOTP(email, otp, config) {
-    // Menginisialisasi klien Resend dengan API Key dari .vars.json
-    const resend = new Resend(config.RESEND.API_KEY);
+async function sendOTP(email, otp) {
+    // Menginisialisasi klien Resend dengan API Key dari .env
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
         // Melakukan pengiriman email
         const { data, error } = await resend.emails.send({
             // Sender address harus diverifikasi di dashboard Resend
-            from: `WUZZSTORE <wuzzstoreservice@${config.RESEND.DOMAIN}>`,
+            from: `WUZZSTORE <wuzzstoreservice@${process.env.RESEND_DOMAIN}>`,
             to: [email],
             subject: 'Kode OTP Verifikasi Anda',
             html: `
@@ -38,8 +38,8 @@ async function sendOTP(email, otp, config) {
 }
 
 // Fungsi 2: Mengirim Link Reset Password via Resend
-async function sendResetLinkEmail(email, token, config) {
-    const resend = new Resend(config.RESEND.API_KEY);
+async function sendResetLinkEmail(email, token) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     let resetLink;
     
     // Regex untuk mendeteksi apakah host berupa IP Address (Lingkungan Development)
@@ -47,15 +47,15 @@ async function sendResetLinkEmail(email, token, config) {
     
     // Jika IP, gunakan protokol HTTP dan Port yang ditentukan
     // Jika Domain, gunakan protokol HTTPS
-    if (ipRegex.test(config.DOMAIN)) {
-        resetLink = `http://${config.DOMAIN}:${config.PORT || 3000}/reset-password?token=${token}`;
+    if (ipRegex.test(process.env.DOMAIN)) {
+        resetLink = `http://${process.env.DOMAIN}:${process.env.PORT || 3000}/reset-password?token=${token}`;
     } else {
-        resetLink = `https://${config.DOMAIN}/reset-password?token=${token}`;
+        resetLink = `https://${process.env.DOMAIN}/reset-password?token=${token}`;
     }
 
     try {
         const { data, error } = await resend.emails.send({
-            from: `WUZZSTORE <wuzzstoreservice@${config.RESEND.DOMAIN}>`,
+            from: `WUZZSTORE <wuzzstoreservice@${process.env.RESEND_DOMAIN}>`,
             to: [email],
             subject: 'Permintaan Reset Password',
             html: `

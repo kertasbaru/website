@@ -1,3 +1,5 @@
 .vars.json
+.env
 github
 webhook_topup/.env
+node_modules

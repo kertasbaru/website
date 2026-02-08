@@ -42,9 +42,9 @@ function createRawEmail(destination, subject, message) {
 }
 
 // Fungsi 1: Mengirim Kode OTP ke Email User
-async function sendOTP(email, otp, config) {
+async function sendOTP(email, otp) {
   try {
-    const auth = getAuth(config.GMAIL.CLIENT_ID, config.GMAIL.CLIENT_SECRET, config.GMAIL.REDIRECT_URI, config.GMAIL.SENDER);
+    const auth = getAuth(process.env.GMAIL_CLIENT_ID, process.env.GMAIL_CLIENT_SECRET, process.env.GMAIL_REDIRECT_URI, process.env.GMAIL_SENDER);
     
     // Template HTML email
     const pesan = `
@@ -77,8 +77,8 @@ async function sendOTP(email, otp, config) {
 }
 
 // Fungsi 2: Mengirim Link Reset Password
-async function sendResetLinkEmail(email, token, config) {
-  const auth = getAuth(config.GMAIL.CLIENT_ID, config.GMAIL.CLIENT_SECRET, config.GMAIL.REDIRECT_URI, config.GMAIL.SENDER);
+async function sendResetLinkEmail(email, token) {
+  const auth = getAuth(process.env.GMAIL_CLIENT_ID, process.env.GMAIL_CLIENT_SECRET, process.env.GMAIL_REDIRECT_URI, process.env.GMAIL_SENDER);
   let resetLink;
   
   // Regex untuk mengecek apakah DOMAIN berupa IP Address
@@ -86,10 +86,10 @@ async function sendResetLinkEmail(email, token, config) {
   
   // Jika menggunakan IP (Development), gunakan HTTP dan Port
   // Jika menggunakan Domain (Production), gunakan HTTPS
-  if (ipRegex.test(config.DOMAIN)) {
-     resetLink = `http://${config.DOMAIN}:${config.PORT || 3000}/reset-password?token=${token}`;
+  if (ipRegex.test(process.env.DOMAIN)) {
+     resetLink = `http://${process.env.DOMAIN}:${process.env.PORT || 3000}/reset-password?token=${token}`;
   } else {
-    resetLink = `https://${config.DOMAIN}/reset-password?token=${token}`;
+    resetLink = `https://${process.env.DOMAIN}/reset-password?token=${token}`;
   }
 
   const pesan = `
@@ -118,8 +118,8 @@ async function sendResetLinkEmail(email, token, config) {
 }
 
 // Fungsi 3: Membaca Email Masuk (Untuk Deposit Otomatis via Bank Jago & Seabank)
-async function emailReceiver(config) {
-  const auth = getAuth(config.GMAIL.CLIENT_ID, config.GMAIL.CLIENT_SECRET, config.GMAIL.REDIRECT_URI, config.GMAIL.RECEIVER);
+async function emailReceiver() {
+  const auth = getAuth(process.env.GMAIL_CLIENT_ID, process.env.GMAIL_CLIENT_SECRET, process.env.GMAIL_REDIRECT_URI, process.env.GMAIL_RECEIVER);
   try {
     // MODIFIED: List pesan yang belum dibaca dari noreply@jago.com ATAU alerts@seabank.co.id
     const listRes = await auth.users.messages.list({
@@ -150,7 +150,7 @@ async function emailReceiver(config) {
       
       try {
         // Kirim data snippet ke Webhook lokal untuk diproses sistem deposit
-        const resWebhook = await axios.post(`https://${config.DOMAIN}/webhook_topup`, {
+        const resWebhook = await axios.post(`https://${process.env.DOMAIN}/webhook_topup`, {
           text: snippet
         });
         

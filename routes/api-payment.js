@@ -1,14 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
-const fs = require('fs');
-const path = require('path');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateDynamicQris } = require('../module/qris.js');
 const { generateRandomString } = require('../module/function.js');
-
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
@@ -33,12 +29,12 @@ router.post('/payment/generate-qris', isAuthenticated, async (req, res) => {
         const uniqueAmount = Math.floor(Math.random() * (150 - 50 + 1)) + 50;
         const finalAmount = parseInt(baseAmount) + uniqueAmount;
         const topUpId = `WZ${generateRandomString(13)}`;
-        const finalQrisString = generateDynamicQris(config.DATAQRIS, finalAmount);
+        const finalQrisString = generateDynamicQris(process.env.DATAQRIS, finalAmount);
         
         await connection.execute(`INSERT INTO deposits (top_up_id, user_id, amount, status) VALUES (?, ?, ?, ?)`, [topUpId, userId, finalAmount, 'PENDING']);
         
         await connection.commit();
-        res.json({ qrisString: finalQrisString, finalAmount, topUpId, rekening: config.JAGO });
+        res.json({ qrisString: finalQrisString, finalAmount, topUpId, rekening: process.env.JAGO });
     } catch (error) {
         if (connection) await connection.rollback();
         res.status(500).json({ message: "Gagal memproses permintaan: " + error.message });
@@ -70,7 +66,7 @@ router.post('/payment/generate-topup', isAuthenticated, async (req, res) => {
         await connection.execute(`INSERT INTO deposits (top_up_id, user_id, amount, status) VALUES (?, ?, ?, ?)`, [topUpId, userId, finalAmount, 'PENDING']);
         
         await connection.commit();
-        res.json({ norek: config.JAGO, finalAmount, topUpId });
+        res.json({ norek: process.env.JAGO, finalAmount, topUpId });
     } catch (error) {
         if (connection) await connection.rollback();
         res.status(500).json({ message: "Gagal memproses permintaan: " + error.message });
@@ -94,8 +90,8 @@ router.get('/deposit/details/:topUpId', isAuthenticated, async (req, res) => {
     try {
         const row = await dbGet(`SELECT amount FROM deposits WHERE top_up_id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.session.userId]);
         if (!row) return res.status(404).json({ message: "Deposit tidak ditemukan atau sudah dibayar." });
-        const finalQrisString = generateDynamicQris(config.DATAQRIS, row.amount);
-        res.json({ qrisString: finalQrisString, finalAmount: row.amount, topUpId, rekening: config.JAGO });
+        const finalQrisString = generateDynamicQris(process.env.DATAQRIS, row.amount);
+        res.json({ qrisString: finalQrisString, finalAmount: row.amount, topUpId, rekening: process.env.JAGO });
     } catch (error) {
         res.status(500).json({ message: "Gagal membuat ulang QRIS." });
     }
@@ -106,7 +102,7 @@ router.get('/deposit/detailsv2/:topUpId', isAuthenticated, async (req, res) => {
     try {
         const row = await dbGet(`SELECT amount FROM deposits WHERE top_up_id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.session.userId]);
         if (!row) return res.status(404).json({ message: "Deposit tidak ditemukan atau sudah dibayar." });
-        res.json({ norek: config.JAGO, finalAmount: row.amount, topUpId });
+        res.json({ norek: process.env.JAGO, finalAmount: row.amount, topUpId });
     } catch (error) {
         res.status(500).json({ message: "Gagal membuat detail deposit." });
     }

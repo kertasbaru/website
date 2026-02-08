@@ -3,14 +3,11 @@ const router = express.Router();
 const pool = require('../database.js');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-const path = require('path');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateOTP } = require('../module/function.js');
 const { sendOTP, verifOTP, sendResetLinkEmail } = require('../module/gmail.js'); // Atau sendMail.js jika pakai Resend
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
 const saltRounds = 10;
 
 // Helper DB
@@ -32,7 +29,7 @@ router.post('/register', async (req, res) => {
         req.session.otp = otp;
         req.session.otpExpires = Date.now() + 10 * 60 * 1000;
 
-        await sendOTP(email, otp, config);
+        await sendOTP(email, otp);
         res.redirect('/verify-otp');
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -43,7 +40,7 @@ router.post('/register', async (req, res) => {
                     req.session.unverifiedEmail = existingUser.email;
                     req.session.otp = otp;
                     req.session.otpExpires = Date.now() + 10 * 60 * 1000;
-                    await sendOTP(existingUser.email, otp, config);
+                    await sendOTP(existingUser.email, otp);
                     return res.redirect('/verify-otp');
                 } catch (sendError) {
                     return res.status(500).send('<script>alert("Gagal mengirim ulang OTP."); window.location.href="/register";</script>');
@@ -76,7 +73,7 @@ router.post('/login', async (req, res) => {
             req.session.unverifiedEmail = user.email;
             req.session.otp = otp;
             req.session.otpExpires = Date.now() + 10 * 60 * 1000;
-            await sendOTP(user.email, otp, config);
+            await sendOTP(user.email, otp);
             return res.redirect('/verify-otp');
         }
 
@@ -95,7 +92,7 @@ router.get('/user', isAuthenticated, async (req, res) => {
         const user = await dbGet(`SELECT id, username, phone, email, telegram, balance, apikey, webhook FROM users WHERE id = ?`, [req.session.userId]);
         if (!user) return res.status(404).json({ success: false, message: "User tidak ditemukan." });
 
-        const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
+        const isAdmin = user.email === process.env.ADMIN_EMAIL && user.username === process.env.ADMIN_USERNAME;
         
         res.json({ ...user, isAdmin: isAdmin });
     } catch (err) {
@@ -141,7 +138,7 @@ router.post('/auth/forgot-password', async (req, res) => {
         const token = uuidv4();
         const expires = new Date(Date.now() + 3600000);
         await connection.execute('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?', [token, expires, user.id]);
-        await sendResetLinkEmail(email, token, config);
+        await sendResetLinkEmail(email, token);
         
         await connection.commit();
         res.json({ success: true, message: 'Jika email terdaftar, link reset password akan dikirim.' });

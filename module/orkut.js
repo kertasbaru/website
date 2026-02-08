@@ -10,17 +10,16 @@ function getFormattedTime() {
 /**
  * Melakukan Order ke OrderKuota (Orkut)
  * @param {Object} data - { code, destination, ref_id }
- * @param {Object} config - Config global (.vars.json)
  */
-async function orderNoOtpOrkut(data, config) {
+async function orderNoOtpOrkut(data) {
     const { code, destination, ref_id } = data; // Pastikan ref_id diambil dari data
     const timeStamp = getFormattedTime();
 
     // Payload sesuai dokumentasi & snippet Anda
     const payload = {
         'quantity': '1',
-        'app_reg_id': config.ORKUT.REG_ID,
-        'phone_uuid': config.ORKUT.PHONE_UUID,
+        'app_reg_id': process.env.ORKUT_REG_ID,
+        'phone_uuid': process.env.ORKUT_PHONE_UUID,
         'id_plgn': destination, 
         'phone_model': 'V2424',
         'kode_promo': '',
@@ -29,10 +28,10 @@ async function orderNoOtpOrkut(data, config) {
         'pin': '', 
         'app_version_code': '251010',
         'phone': destination,
-        'auth_username': config.ORKUT.USERNAME,
+        'auth_username': process.env.ORKUT_USERNAME,
         'voucher_id': code, 
         'payment': 'balance',
-        'auth_token': config.ORKUT.TOKEN,
+        'auth_token': process.env.ORKUT_TOKEN,
         'app_version_name': '25.10.10',
         'ui_mode': 'dark'
     };
@@ -84,15 +83,15 @@ async function orderNoOtpOrkut(data, config) {
 /**
  * Cek Status Transaksi (Riwayat)
  */
-async function checkStatusOrkut(trx_id_provider, config) {
+async function checkStatusOrkut(trx_id_provider) {
     const timeStamp = getFormattedTime();
 
     const payload = {
-        'app_reg_id': config.ORKUT.REG_ID,
-        'phone_uuid': config.ORKUT.PHONE_UUID,
+        'app_reg_id': process.env.ORKUT_REG_ID,
+        'phone_uuid': process.env.ORKUT_PHONE_UUID,
         'request_time': timeStamp,
-        'auth_username': config.ORKUT.USERNAME,
-        'auth_token': config.ORKUT.TOKEN,
+        'auth_username': process.env.ORKUT_USERNAME,
+        'auth_token': process.env.ORKUT_TOKEN,
         'app_version_code': '251010',
         'phone_model': 'V2424',
         'limit': '20',

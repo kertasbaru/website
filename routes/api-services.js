@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const axios = require('axios');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateRandomString, cekNomorXl, ubahKe62, ubahKe0 } = require('../module/function.js');
@@ -11,8 +11,6 @@ const { requestOtp, loginOtp, checkSession, checkQuotas, getProducts, buyPackage
 const { getAkrabStockFlaz, inviteAkrabMember } = require('../module/flaz.js');
 const { getProductKhfy, orderProductKhfy } = require('../module/khfy.js');
 const { getListProduct, orderProduct } = require('../module/kaje.js');
-
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
@@ -25,7 +23,7 @@ router.post('/xl/request-otp', isAuthenticated, async (req, res) => {
     const formattedNumber = ubahKe62(number);
     if (!cekNomorXl(formattedNumber)) return res.status(400).json({ success: false, message: 'Nomor bukan nomor XL/Axis.' });
     try {
-        const responseData = await requestOtp(formattedNumber, config);
+        const responseData = await requestOtp(formattedNumber);
         res.json(responseData);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -37,7 +35,7 @@ router.post('/xl/login-otp', isAuthenticated, async (req, res) => {
     const formattedNumber = ubahKe62(number);
     if (!number || !otp || otp.length < 6) return res.status(400).json({ success: false, message: 'Data tidak valid.' });
     try {
-        const responseData = await loginOtp(formattedNumber, otp, config);
+        const responseData = await loginOtp(formattedNumber, otp);
         if (responseData && responseData.success) {
             const user = await dbGet(`SELECT number_otp FROM users WHERE id = ?`, [req.session.userId]);
             let numbers = JSON.parse(user.number_otp || '[]');
@@ -61,7 +59,7 @@ router.post('/xl/check-session', isAuthenticated, async (req, res) => {
         const numbers = JSON.parse(user.number_otp || '[]');
         if (!numbers.some(item => item.number === formattedNumber)) return res.status(403).json({ success: false, message: 'Nomor belum diautentikasi.' });
         
-        const responseData = await checkSession(formattedNumber, config);
+        const responseData = await checkSession(formattedNumber);
         res.json(responseData);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -71,7 +69,7 @@ router.post('/xl/check-session', isAuthenticated, async (req, res) => {
 router.post('/xl/check-quotas', isAuthenticated, async (req, res) => {
     try {
         const formattedNumber = ubahKe62(req.body.number);
-        const quotaData = await checkQuotas(formattedNumber, config); 
+        const quotaData = await checkQuotas(formattedNumber); 
         res.json(quotaData);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -80,10 +78,10 @@ router.post('/xl/check-quotas', isAuthenticated, async (req, res) => {
 
 router.post('/xl/get-products', isAuthenticated, async (req, res) => {
     try {
-        const productData = await getProducts(req.body.number, config);
+        const productData = await getProducts(req.body.number);
         if (productData.success && productData.data.products) {
             productData.data.products = productData.data.products.map(product => {
-                const final_price = product.fee > 0 ? product.fee + (config.UNTUNG || 0) : 0;
+                const final_price = product.fee > 0 ? product.fee + (Number(process.env.UNTUNG) || 0) : 0;
                 return { ...product, final_price };
             });
         }
@@ -103,16 +101,16 @@ router.post('/xl/buy-package', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const productData = await getProducts(ubahKe62(number), config);
+        const productData = await getProducts(ubahKe62(number));
         const product = productData.data.products.find(p => p.code === code);
         if (!product) throw new Error('Produk tidak ditemukan.');
         
-        const price = product.fee > 0 ? product.fee + (config.UNTUNG || 0) : 0;
+        const price = product.fee > 0 ? product.fee + (Number(process.env.UNTUNG) || 0) : 0;
         
         const [userRows] = await connection.execute(`SELECT balance FROM users WHERE id = ? FOR UPDATE`, [userId]);
         if (userRows[0].balance < price) throw new Error('Saldo tidak mencukupi.');
         
-        const responseData = await buyPackage({ number: ubahKe62(number), ref_id: `WZ${generateRandomString(13)}`, code, payment }, config);
+        const responseData = await buyPackage({ number: ubahKe62(number), ref_id: `WZ${generateRandomString(13)}`, code, payment });
 
         if (responseData && responseData.success) {
             if (price > 0) await connection.execute(`UPDATE users SET balance = balance - ? WHERE id = ?`, [price, userId]);
@@ -139,10 +137,10 @@ router.post('/xl/buy-package', isAuthenticated, async (req, res) => {
 // v2: List Produk
 router.post('/xl/list-product', isAuthenticated, async (req, res) => {
     try {
-        const productData = await getListProduct(config);
+        const productData = await getListProduct();
         if (productData.success && productData.data && productData.data.products) {
             const productsWithFinalPrice = productData.data.products.map(product => {
-                const final_price = product.price > 0 ? product.price + (config.UNTUNG || 0) : 0;
+                const final_price = product.price > 0 ? product.price + (Number(process.env.UNTUNG) || 0) : 0;
                 return { ...product, final_price };
             });
             res.json({ success: true, data: { products: productsWithFinalPrice } });
@@ -165,16 +163,16 @@ router.post('/xl/akrabv2/order', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const productData = await getListProduct(config);
+        const productData = await getListProduct();
         const product = productData.data.products.find(p => p.code === code);
         if (!product) throw new Error('Produk tidak ditemukan.');
 
-        const price = product.price > 0 ? product.price + (config.UNTUNG || 0) : 0;
+        const price = product.price > 0 ? product.price + (Number(process.env.UNTUNG) || 0) : 0;
         const [userRows] = await connection.execute(`SELECT balance FROM users WHERE id = ? FOR UPDATE`, [userId]);
         if (userRows[0].balance < price) throw new Error('Saldo tidak mencukupi.');
 
         const ref_id = `WZ${generateRandomString(13)}`;
-        const responseData = await orderProduct({ code, destination: ubahKe0(destination), ref_id }, config);
+        const responseData = await orderProduct({ code, destination: ubahKe0(destination), ref_id });
 
         if (responseData && (responseData.success === true || responseData.code === "000")) {
             if (price > 0) await connection.execute(`UPDATE users SET balance = balance - ? WHERE id = ?`, [price, userId]);
@@ -206,7 +204,7 @@ router.post('/xl/akrab/invite', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const stockData = await getAkrabStockFlaz(config);
+        const stockData = await getAkrabStockFlaz();
         const product = stockData.data.find(p => p.code === code);
         if (!product) throw new Error('Produk Akrab tidak ditemukan.');
 
@@ -215,7 +213,7 @@ router.post('/xl/akrab/invite', isAuthenticated, async (req, res) => {
         if (userRows[0].balance < price) throw new Error('Saldo tidak mencukupi.');
         
         const ref_id = `WZ${generateRandomString(13)}`;
-        const responseData = await inviteAkrabMember({ code, parent_name, destination: ubahKe0(destination), ref_id }, config);
+        const responseData = await inviteAkrabMember({ code, parent_name, destination: ubahKe0(destination), ref_id });
 
         if (responseData && (responseData.success === true || responseData.code === "000")) {
             if (price > 0) await connection.execute(`UPDATE users SET balance = balance - ? WHERE id = ?`, [price, userId]);
@@ -239,7 +237,7 @@ router.post('/xl/akrab/invite', isAuthenticated, async (req, res) => {
 // v3: Stock KHFY & Order
 router.post('/v3/xl/stock-khfy', isAuthenticated, async (req, res) => {
     try {
-        const productData = await getProductKhfy(config);
+        const productData = await getProductKhfy();
         if (!productData.ok || !Array.isArray(productData.data)) throw new Error(productData.message || 'Gagal mengambil data stok.');
 
         const akrabJsonPath = path.join(__dirname, '..', 'akrab.json');
@@ -274,7 +272,7 @@ router.post('/xl/akrabv3/order', isAuthenticated, async (req, res) => {
         const [userRows] = await connection.execute(`SELECT balance FROM users WHERE id = ? FOR UPDATE`, [userId]);
         if (userRows[0].balance < price) throw new Error('Saldo tidak mencukupi.');
 
-        const apiResponse = await orderProductKhfy({ code, destination: ubahKe0(destination) }, config);
+        const apiResponse = await orderProductKhfy({ code, destination: ubahKe0(destination) });
         if (apiResponse.ok === false) throw new Error('Transaksi gagal karena produk sedang error');
 
         if (price > 0) await connection.execute(`UPDATE users SET balance = balance - ? WHERE id = ?`, [price, userId]);
@@ -321,7 +319,7 @@ router.post('/no-otp/order', isAuthenticated, async (req, res) => {
         const product = await dbGet(`SELECT * FROM no_otp WHERE product_id = ?`, [code]);
         if (!product) throw new Error('Produk tidak ditemukan.');
 
-        const price = product.amount > 0 ? product.amount + (config.UNTUNG || 0) : 0;
+        const price = product.amount > 0 ? product.amount + (Number(process.env.UNTUNG) || 0) : 0;
         const [userRows] = await connection.execute(`SELECT balance FROM users WHERE id = ? FOR UPDATE`, [userId]);
         if (userRows[0].balance < price) throw new Error('Saldo tidak mencukupi.');
 
@@ -360,7 +358,7 @@ router.post('/check-package', isAuthenticated, async (req, res) => {
 
 router.post('/xl/akrab-stock', isAuthenticated, async (req, res) => {
     try {
-        const stockData = await getAkrabStockFlaz(config);
+        const stockData = await getAkrabStockFlaz();
         res.json(stockData);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

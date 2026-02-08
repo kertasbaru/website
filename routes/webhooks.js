@@ -2,13 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 const { getTransactionInfo: getTransactionInfoKaje } = require('../module/kaje.js');
 const { getTransactionInfoFlaz } = require('../module/flaz.js');
-
-// --- Konfigurasi ---
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
 
 // --- Helper Database ---
 const dbGet = async (sql, params = []) => {
@@ -111,7 +106,7 @@ router.post('/webhook_kaje', async (req, res) => {
         await connection.beginTransaction();
 
         // Validasi status ke server Kaje untuk keamanan (Double Check)
-        const txInfo = await getTransactionInfoKaje(trx_id, config);
+        const txInfo = await getTransactionInfoKaje(trx_id);
         if (!txInfo.success || !txInfo.data) throw new Error('Provider API error.');
 
         const { status, serial_number, deeplink, message } = txInfo.data;
@@ -164,7 +159,7 @@ router.post('/webhook_flaz', async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const txInfo = await getTransactionInfoFlaz(trx_id, config);
+        const txInfo = await getTransactionInfoFlaz(trx_id);
         if (!txInfo.success || !txInfo.data) throw new Error('Provider API error.');
 
         const { status, serial_number, message } = txInfo.data;
