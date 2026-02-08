@@ -5,45 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XL Tembak - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content">
-        <div class="profile-card">
-            <h2><i class="fas fa-bullseye"></i> XL Tembak Paket</h2>
-            <p class="topup-subtitle">Pastikan nomor sudah login di menu <strong>XL Auth</strong> sebelum melanjutkan.</p>
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden">
+            <h2 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl"><i class="fas fa-bullseye"></i> XL Tembak Paket</h2>
+            <p class="text-gray-500 dark:text-slate-400 text-sm mb-4">Pastikan nomor sudah login di menu <strong>XL Auth</strong> sebelum melanjutkan.</p>
             
             <div id="message-display" class="tembak-info-box" style="display: none; margin-bottom: 15px;"></div>
             
             <form id="tembakForm" onsubmit="return false;">
-                <div class="form-group">
-                    <label for="nomorInput">Nomor XL</label>
-                    <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 087812345678" class="form-input" autocomplete="off" required>
+                <div class="mb-5 text-left">
+                    <label for="nomorInput" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor XL</label>
+                    <input type="tel" id="nomorInput" name="number" placeholder="Contoh: 087812345678" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" autocomplete="off" required>
                 </div>
                 
-                <button type="button" id="loginButton" class="btn btn-success" style="display: none; margin-top: 15px;">
+                <button type="button" id="loginButton" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer" style="display: none; margin-top: 15px;">
                     <i class="fas fa-sign-in-alt"></i> Masuk & Ambil Paket
                 </button>
             </form>
         </div>
 
-        <div id="products-container" class="profile-card" style="display: none; margin-top: 20px;">
-            <h3><i class="fas fa-shopping-cart"></i> Pilih Produk</h3>
+        <div id="products-container" class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none relative overflow-hidden" style="display: none; margin-top: 20px;">
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-lg"><i class="fas fa-shopping-cart"></i> Pilih Produk</h3>
             
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="categoryFilter"><i class="fas fa-filter"></i> Kategori Paket</label>
-                <select id="categoryFilter" class="form-input">
+            <div class="mb-5 text-left" style="margin-top: 15px;">
+                <label for="categoryFilter" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400"><i class="fas fa-filter"></i> Kategori Paket</label>
+                <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition">
                     <option value="Semua Kategori">Semua Kategori</option>
                 </select>
             </div>
@@ -52,83 +48,83 @@
         </div>
     </main>
 
-    <div id="buyModal" class="modal">
-        <div class="modal-content">
-            <span id="closeModalBtn_xl" class="modal-close-btn">&times;</span>
-            <h3 id="modalTitle">KONFIRMASI PEMBELIAN</h3>
+    <div id="buyModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <span id="closeModalBtn_xl" class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2" id="modalTitle">KONFIRMASI PEMBELIAN</h3>
             <hr>
             <form id="buyForm" data-code="">
-                <div class="form-group">
-                    <label>Nama Produk</label>
-                    <input id="modalProductName" class="form-input" type="text" readonly disabled>
+                <div class="mb-5 text-left">
+                    <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nama Produk</label>
+                    <input id="modalProductName" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled>
                 </div>
-                <div class="form-group">
-                    <label>Nomor Tujuan</label>
-                    <input id="modalNumber" class="form-input" type="text" readonly disabled style="font-weight: bold;">
+                <div class="mb-5 text-left">
+                    <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Nomor Tujuan</label>
+                    <input id="modalNumber" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled style="font-weight: bold;">
                 </div>
-                <div class="form-group">
-                    <label>Harga Paket</label>
-                    <input id="modalFee" class="form-input" type="text" readonly disabled style="color: #5c67f2; font-weight: bold;">
+                <div class="mb-5 text-left">
+                    <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Harga Paket</label>
+                    <input id="modalFee" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled style="color: #5c67f2; font-weight: bold;">
                 </div>
                 
-                <div class="form-group">
-                    <label for="modalPaymentMethod">Metode Pembayaran</label>
-                    <select id="modalPaymentMethod" name="payment" class="form-input" style="background-color: #f0f8ff; border-color: #a7d9f2;">
+                <div class="mb-5 text-left">
+                    <label for="modalPaymentMethod" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Metode Pembayaran</label>
+                    <select id="modalPaymentMethod" name="payment" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" style="background-color: #f0f8ff; border-color: #a7d9f2;">
                         </select>
                 </div>
 
-                <div id="modalPriceInfoContainer" class="info-box-blue" style="display: none; font-size: 0.9rem;">
+                <div id="modalPriceInfoContainer" class="text-center p-4 rounded-xl mt-5 font-medium text-sm bg-sky-100 dark:bg-blue-500/15 text-sky-700 dark:text-blue-300 border border-sky-200 dark:border-blue-500/30" style="display: none; font-size: 0.9rem;">
                     <p id="modalPriceInfo" style="margin: 0;"></p>
                 </div>
 
-                <div class="modal-button-container">
-                    <button type="button" id="closeModalButton" class="btn btn-danger">Batal</button>
-                    <button type="submit" id="buyButton" class="btn btn-success">Beli Sekarang</button>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" id="closeModalButton" class="btn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                    <button type="submit" id="buyButton" class="btn w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Beli Sekarang</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="txDetailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-title-container">
-                <h3>DETAIL TRANSAKSI</h3>
+    <div id="txDetailModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+            <div class="relative">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">DETAIL TRANSAKSI</h3>
                 <div class="loading-line"></div>
             </div>
             <hr>
             <form id="txDetailForm">
-                <div class="form-group"><label>Ref ID</label><input id="txRefId" class="form-input" type="text" readonly disabled></div>
-                <div class="form-group"><label>Produk</label><input id="txProductName" class="form-input" type="text" readonly disabled></div>
-                <div class="form-group"><label>Status</label><input id="txStatus" class="form-input" type="text" readonly disabled style="font-weight: bold;"></div>
-                <div class="form-group"><label>Pesan</label><input id="txMessage" class="form-input" type="text" readonly disabled></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Ref ID</label><input id="txRefId" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Produk</label><input id="txProductName" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Status</label><input id="txStatus" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled style="font-weight: bold;"></div>
+                <div class="mb-5 text-left"><label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Pesan</label><input id="txMessage" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled></div>
                 
-                <div class="form-group">
-                    <label>Pembayaran</label>
+                <div class="mb-5 text-left">
+                    <label class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Pembayaran</label>
                     <div class="payment-display" style="display: flex; gap: 10px; align-items: center;">
-                        <input id="txPaymentMethod" class="form-input" type="text" readonly disabled style="flex-grow: 1;">
+                        <input id="txPaymentMethod" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" type="text" readonly disabled style="flex-grow: 1;">
                         <span id="txPaymentAction"></span>
                     </div>
                 </div>
                 
-                <button type="button" id="closeTxDetailModalBtn" class="btn btn-secondary" style="margin-top: 15px;">Tutup</button>
+                <button type="button" id="closeTxDetailModalBtn" class="btn w-full py-3.5 rounded-xl bg-gray-500 text-white font-semibold shadow-lg shadow-gray-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer" style="margin-top: 15px;">Tutup</button>
             </form>
         </div>
     </div>
 
-    <div id="xlQrisModal" class="modal">
-        <div class="modal-content">
-             <span class="modal-close-btn" onclick="document.getElementById('xlQrisModal').style.display = 'none'">&times;</span>
-            <h3>Scan QRIS</h3>
+    <div id="xlQrisModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
+             <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition" onclick="document.getElementById('xlQrisModal').style.display = 'none'">&times;</span>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Scan QRIS</h3>
             <div id="xlQrisContainer" style="padding: 15px; background-color: white; margin: 20px auto; display: inline-block; border-radius: 8px;"></div>
         </div>
     </div>
     
-    <div id="txErrorModal" class="modal">
-        <div class="modal-content">
+    <div id="txErrorModal" class="modal" style="display: none;">
+        <div class="modal-content bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto my-[5%] p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown">
             <div class="modal-icon" style="color: #d9534f; font-size: 4rem; margin-bottom: 15px;"><i class="fas fa-times-circle"></i></div>
-            <h4>Transaksi Gagal</h4>
+            <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Transaksi Gagal</h4>
             <p id="txErrorMessage" style="color: #555;">Terjadi kesalahan.</p>
-            <button type="button" id="closeTxErrorModalBtn" class="btn btn-danger" style="max-width: 200px; margin: 20px auto 0;">OK</button>
+            <button type="button" id="closeTxErrorModalBtn" class="btn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer" style="max-width: 200px; margin: 20px auto 0;">OK</button>
         </div>
     </div>
     
