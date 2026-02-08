@@ -23,8 +23,41 @@
   }
 }
 
-/* Starfield Animation (Login/Register) */
+/* Sidebar & Accordion state-based styles */
 @layer components {
+  /* Sidebar open state */
+  #sidebar.open {
+    @apply translate-x-0 shadow-xl;
+  }
+
+  /* Overlay active state */
+  #overlay.active {
+    @apply opacity-100 visible;
+  }
+
+  /* Submenu active state */
+  .has-submenu.active .submenu {
+    max-height: 500px;
+  }
+
+  /* History accordion active states */
+  .history-item.active .history-header .icon {
+    @apply rotate-90 text-indigo-500;
+  }
+
+  .history-item.active .history-details {
+    max-height: 1500px;
+    opacity: 1;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-top-color: theme('colors.gray.200');
+  }
+
+  .dark-theme .history-item.active .history-details {
+    border-top-color: theme('colors.slate.700');
+  }
+
+  /* Starfield Animation (Login/Register) */
   .stars-bg {
     @apply fixed top-0 left-0 w-full h-full -z-10 pointer-events-none;
   }

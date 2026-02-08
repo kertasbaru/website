@@ -5,43 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content">
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10">
         
-        <div class="history-item" id="topup-history-item">
-            <div class="history-header">
+        <div class="history-item border border-gray-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 mt-5 overflow-hidden transition-all" id="topup-history-item">
+            <div class="history-header p-5 font-semibold flex justify-between items-center gap-2.5 text-gray-800 dark:text-gray-100 cursor-pointer select-none hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
                 <span><i class="fas fa-wallet"></i> Riwayat Top Up</span>
-                <i class="fas fa-chevron-right icon"></i>
+                <i class="fas fa-chevron-right icon transition-transform duration-500"></i>
             </div>
-            <div class="history-details">
-                <div class="filter-container">
-                    <div class="form-group">
-                        <input type="text" id="topupSearchInput" class="form-input" placeholder="Cari ID atau Nominal...">
+            <div class="history-details block max-h-0 opacity-0 overflow-hidden px-5 border-t border-transparent transition-all duration-500">
+                <div class="flex items-center gap-2.5 mb-5 mt-5">
+                    <div class="flex-1">
+                        <input type="text" id="topupSearchInput" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" placeholder="Cari ID atau Nominal...">
                     </div>
-                    <button id="topupSearchBtn" class="btn btn-small btn-view"><i class="fas fa-search"></i></button>
-                    <button id="topupDateFilterBtn" class="btn btn-small btn-info"><i class="fas fa-calendar-alt"></i></button>
+                    <button id="topupSearchBtn" class="inline-flex items-center justify-center w-8 h-8 p-0 rounded-full bg-blue-500 text-white shadow-none border-none cursor-pointer"><i class="fas fa-search"></i></button>
+                    <button id="topupDateFilterBtn" class="inline-block px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-500 hover:opacity-90 transition border-none cursor-pointer"><i class="fas fa-calendar-alt"></i></button>
                 </div>
-                <div class="table-responsive-wrapper">
-                    <table class="deposit-table">
+                <div class="w-full overflow-x-auto border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <table class="w-full border-collapse text-[0.95rem]">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Jumlah</th>
-                                <th>Status</th>
-                                <th>Waktu</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">ID</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Jumlah</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Status</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Waktu</th>
                             </tr>
                         </thead>
                         <tbody id="topup-history-body"></tbody>
@@ -50,29 +46,29 @@
             </div>
         </div>
 
-        <div class="history-item" id="transaction-history-item">
-            <div class="history-header">
+        <div class="history-item border border-gray-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 mt-5 overflow-hidden transition-all" id="transaction-history-item">
+            <div class="history-header p-5 font-semibold flex justify-between items-center gap-2.5 text-gray-800 dark:text-gray-100 cursor-pointer select-none hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
                 <span><i class="fas fa-shopping-cart"></i> Riwayat Transaksi</span>
-                <i class="fas fa-chevron-right icon"></i>
+                <i class="fas fa-chevron-right icon transition-transform duration-500"></i>
             </div>
-            <div class="history-details">
-                 <div class="filter-container">
-                    <div class="form-group">
-                        <input type="text" id="txSearchInput" class="form-input" placeholder="Cari Produk/Tujuan...">
+            <div class="history-details block max-h-0 opacity-0 overflow-hidden px-5 border-t border-transparent transition-all duration-500">
+                 <div class="flex items-center gap-2.5 mb-5 mt-5">
+                    <div class="flex-1">
+                        <input type="text" id="txSearchInput" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" placeholder="Cari Produk/Tujuan...">
                     </div>
-                    <button id="txSearchBtn" class="btn btn-small btn-view"><i class="fas fa-search"></i></button>
-                    <button id="txDateFilterBtn" class="btn btn-small btn-info"><i class="fas fa-calendar-alt"></i></button>
+                    <button id="txSearchBtn" class="inline-flex items-center justify-center w-8 h-8 p-0 rounded-full bg-blue-500 text-white shadow-none border-none cursor-pointer"><i class="fas fa-search"></i></button>
+                    <button id="txDateFilterBtn" class="inline-block px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-500 hover:opacity-90 transition border-none cursor-pointer"><i class="fas fa-calendar-alt"></i></button>
                 </div>
-                <div class="table-responsive-wrapper">
-                    <table class="deposit-table">
+                <div class="w-full overflow-x-auto border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <table class="w-full border-collapse text-[0.95rem]">
                         <thead>
                             <tr>
-                                <th>Ref ID</th>
-                                <th>Produk</th>
-                                <th>Tujuan</th>
-                                <th>Harga</th>
-                                <th>Status</th>
-                                <th>Ket</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Ref ID</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Produk</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Tujuan</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Harga</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Status</th>
+                                <th class="bg-gray-50 dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-semibold p-4 uppercase text-xs tracking-wider border-b border-gray-200 dark:border-slate-700 text-center">Ket</th>
                             </tr>
                         </thead>
                         <tbody id="transaction-history-body"></tbody>
@@ -82,81 +78,81 @@
         </div>
     </main>
 
-    <div id="historyQrisModal" class="modal">
-        <div class="modal-content">
-             <span class="modal-close-btn" onclick="document.getElementById('historyQrisModal').style.display = 'none'">&times;</span>
-            <h3>Scan Pembayaran</h3>
-            <div style="display:flex; justify-content:center;">
-                <div id="historyQrisContainer" style="padding:15px; background:#fff; border-radius:12px; border:1px solid #eee;"></div>
+    <div id="historyQrisModal" class="hidden fixed inset-0 z-[3000] overflow-auto bg-black/50 backdrop-blur-sm pt-[60px]">
+        <div class="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown mt-[5%]">
+             <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition" onclick="document.getElementById('historyQrisModal').classList.add('hidden');document.getElementById('historyQrisModal').classList.remove('flex')">&times;</span>
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl">Scan Pembayaran</h3>
+            <div class="flex justify-center">
+                <div id="historyQrisContainer" class="p-4 bg-white rounded-xl border border-gray-200"></div>
             </div>
         </div>
     </div>
 
-    <div id="dateFilterModal" class="modal">
-        <div class="modal-content">
-            <h4>Filter Tanggal</h4>
-            <div class="form-group">
-                <label for="startDate">Dari Tanggal</label>
-                <input type="date" id="startDate" class="form-input">
+    <div id="dateFilterModal" class="hidden fixed inset-0 z-[3000] overflow-auto bg-black/50 backdrop-blur-sm pt-[60px]">
+        <div class="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown mt-[5%]">
+            <h4 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-lg">Filter Tanggal</h4>
+            <div class="mb-5 text-left">
+                <label for="startDate" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Dari Tanggal</label>
+                <input type="date" id="startDate" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition">
             </div>
-            <div class="form-group">
-                <label for="endDate">Sampai Tanggal</label>
-                <input type="date" id="endDate" class="form-input">
+            <div class="mb-5 text-left">
+                <label for="endDate" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Sampai Tanggal</label>
+                <input type="date" id="endDate" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition">
             </div>
-            <div class="modal-button-container">
-                <button type="button" id="closeDateModalBtn" class="btn btn-secondary">Batal</button>
-                <button type="button" id="applyDateFilterBtn" class="btn btn-success">Terapkan</button>
+            <div class="flex gap-4 mt-6">
+                <button type="button" id="closeDateModalBtn" class="w-full py-3.5 rounded-xl bg-gray-400 text-white font-semibold shadow-lg hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                <button type="button" id="applyDateFilterBtn" class="w-full py-3.5 rounded-xl bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Terapkan</button>
             </div>
         </div>
     </div>
 
-    <div id="txDetailHistoryModal" class="modal">
-        <div class="modal-content">
+    <div id="txDetailHistoryModal" class="hidden fixed inset-0 z-[3000] overflow-auto bg-black/50 backdrop-blur-sm pt-[60px]">
+        <div class="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown mt-[5%]">
             
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div id="detailStatusIcon" style="font-size: 3.5rem; margin-bottom: 10px;"></div>
-                <h3 style="margin: 0;">Detail Transaksi</h3>
-                <p id="detailRefIdHeader" style="color: #888; font-size: 0.9rem; margin-top: 5px; font-family: monospace;"></p>
+            <div class="text-center mb-5">
+                <div id="detailStatusIcon" class="text-[3.5rem] mb-2.5"></div>
+                <h3 class="m-0 font-bold text-xl text-gray-800 dark:text-gray-100">Detail Transaksi</h3>
+                <p id="detailRefIdHeader" class="text-gray-500 dark:text-slate-400 text-sm mt-1.5 font-mono"></p>
             </div>
 
-            <hr style="border: 0; border-bottom: 2px dashed var(--border-color-light); margin-bottom: 20px;">
+            <hr class="border-0 border-b-2 border-dashed border-gray-200 dark:border-slate-700 mb-5">
 
-            <ul class="detail-list">
-                <li>
-                    <dt>Nama Produk</dt>
-                    <dd id="detailProductName"></dd>
+            <ul class="list-none p-0 m-0">
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Nama Produk</dt>
+                    <dd id="detailProductName" class="font-semibold text-gray-800 dark:text-gray-100 text-right"></dd>
                 </li>
-                <li>
-                    <dt>Nomor Tujuan</dt>
-                    <dd id="detailDestination"></dd>
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Nomor Tujuan</dt>
+                    <dd id="detailDestination" class="font-semibold text-gray-800 dark:text-gray-100 text-right"></dd>
                 </li>
-                <li>
-                    <dt>Harga</dt>
-                    <dd id="detailPrice" style="color: var(--primary-color);"></dd>
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Harga</dt>
+                    <dd id="detailPrice" class="font-semibold text-indigo-500 text-right"></dd>
                 </li>
-                <li>
-                    <dt>Metode Pembayaran</dt>
-                    <dd id="detailPayment"></dd>
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Metode Pembayaran</dt>
+                    <dd id="detailPayment" class="font-semibold text-gray-800 dark:text-gray-100 text-right"></dd>
                 </li>
-                <li>
-                    <dt>Status</dt>
-                    <dd id="detailStatus"></dd>
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Status</dt>
+                    <dd id="detailStatus" class="font-semibold text-gray-800 dark:text-gray-100 text-right"></dd>
                 </li>
-                <li>
-                    <dt>SN / Keterangan</dt>
-                    <dd id="detailPengelola" style="max-width: 60%; word-wrap: break-word; font-size: 0.85rem;"></dd>
+                <li class="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-slate-700 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">SN / Keterangan</dt>
+                    <dd id="detailPengelola" class="font-semibold text-gray-800 dark:text-gray-100 text-right max-w-[60%] break-words text-[0.85rem]"></dd>
                 </li>
-                <li>
-                    <dt>Waktu</dt>
-                    <dd id="detailWaktu" style="font-size: 0.85rem;"></dd>
+                <li class="flex justify-between items-center py-3 border-b-0 text-[0.95rem]">
+                    <dt class="text-gray-500 dark:text-slate-400 font-medium">Waktu</dt>
+                    <dd id="detailWaktu" class="font-semibold text-gray-800 dark:text-gray-100 text-right text-[0.85rem]"></dd>
                 </li>
             </ul>
 
-            <div class="modal-button-container">
-                <button id="copyTxDetailBtn" class="btn btn-info">
+            <div class="flex gap-4 mt-6">
+                <button id="copyTxDetailBtn" class="w-full py-3.5 rounded-xl bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">
                     <i class="fas fa-copy"></i> Salin
                 </button>
-                <button id="closeTxDetailHistoryBtn" class="btn btn-danger">
+                <button id="closeTxDetailHistoryBtn" class="w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">
                     Tutup
                 </button>
             </div>
@@ -192,6 +188,10 @@
 
             let currentFilterType = '';
 
+            // --- Modal Helpers ---
+            const showModal = (modal) => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
+            const hideModalEl = (modal) => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
+
             // --- Helper Functions ---
             const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
@@ -210,10 +210,10 @@
 
             const getStatusBadge = (status) => {
                 status = status ? status.toLowerCase() : 'failed';
-                let className = 'status-failed';
-                if (status === 'success' || status === 'sukses') className = 'status-success';
-                else if (['pending', 'processing'].includes(status)) className = 'status-pending';
-                return `<span class="status-badge ${className}">${status.toUpperCase()}</span>`;
+                let badgeClasses = 'bg-red-100 text-red-600';
+                if (status === 'success' || status === 'sukses') badgeClasses = 'bg-emerald-100 text-emerald-600';
+                else if (['pending', 'processing'].includes(status)) badgeClasses = 'bg-amber-100 text-amber-600';
+                return `<span class="px-3 py-1.5 rounded-full font-bold text-xs uppercase tracking-wide ${badgeClasses}">${status.toUpperCase()}</span>`;
             };
 
             // --- LOGIKA ACCORDION (BUKA-TUTUP) YANG BENAR ---
@@ -276,7 +276,8 @@
                 document.getElementById('detailPengelola').textContent = pengelolaText;
                 document.getElementById('detailWaktu').textContent = formatWaktu(txData.updated_at);
 
-                txDetailHistoryModal.style.display = 'block';
+                txDetailHistoryModal.classList.remove('hidden');
+                txDetailHistoryModal.classList.add('flex');
             });
             
             // --- FUNGSI COPY ---
@@ -325,7 +326,7 @@ Terima Kasih!`;
                 const bodyElement = type === 'topup' ? topupHistoryBody : transactionHistoryBody;
                 const colSpan = type === 'topup' ? 4 : 6; 
                 
-                bodyElement.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;"><div class="spinner" style="margin:10px auto; width:25px; height:25px;"></div></td></tr>`;
+                bodyElement.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 border-b border-gray-200 dark:border-slate-700 text-center"><div class="spinner mx-auto w-[25px] h-[25px]"></div></td></tr>`;
                 
                 try {
                     const response = await fetch(endpoint, {
@@ -340,23 +341,23 @@ Terima Kasih!`;
                     else populateTransactionHistory(result.data);
                     
                 } catch (error) {
-                    bodyElement.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center; color:#ef4444;">Gagal memuat data.</td></tr>`;
+                    bodyElement.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 text-center text-red-500">Gagal memuat data.</td></tr>`;
                 }
             };
 
             const populateTopupHistory = (topups) => {
                 topupHistoryBody.innerHTML = '';
                 if (topups.length === 0) {
-                    topupHistoryBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#888;">Belum ada riwayat.</td></tr>';
+                    topupHistoryBody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500 dark:text-slate-400">Belum ada riwayat.</td></tr>';
                     return;
                 }
                 topups.forEach(topup => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><small>${topup.top_up_id}</small></td>
-                        <td>${formatCurrency(topup.amount)}</td>
-                        <td style="text-align:center;">${getStatusBadge(topup.status)}</td>
-                        <td><small>${formatWaktu(topup.updated_at)}</small></td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle"><small>${topup.top_up_id}</small></td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle">${formatCurrency(topup.amount)}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-center align-middle">${getStatusBadge(topup.status)}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle"><small>${formatWaktu(topup.updated_at)}</small></td>
                     `;
                     topupHistoryBody.appendChild(row);
                 });
@@ -365,12 +366,12 @@ Terima Kasih!`;
             const populateTransactionHistory = (transactions) => {
                 transactionHistoryBody.innerHTML = '';
                 if (transactions.length === 0) {
-                    transactionHistoryBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#888;">Belum ada transaksi.</td></tr>';
+                    transactionHistoryBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500 dark:text-slate-400">Belum ada transaksi.</td></tr>';
                     return;
                 }
                 transactions.forEach(tx => {
                     const row = document.createElement('tr');
-                    row.classList.add('clickable-row');
+                    row.classList.add('cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-white/[0.03]', 'transition');
                     row.dataset.transaction = JSON.stringify(tx);
                     
                     let snText = (['success', 'sukses'].includes((tx.status||'').toLowerCase())) 
@@ -378,12 +379,12 @@ Terima Kasih!`;
                         : (tx.message || '-');
 
                     row.innerHTML = `
-                        <td><small>${tx.ref_id}</small></td>
-                        <td>${tx.product_name || '-'}</td>
-                        <td>${tx.destination}</td>
-                        <td style="color:var(--danger);">${formatCurrency(tx.price)}</td>
-                        <td style="text-align:center;">${getStatusBadge(tx.status)}</td>
-                        <td><small>${snText}</small></td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle"><small>${tx.ref_id}</small></td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle">${tx.product_name || '-'}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle">${tx.destination}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-red-500 align-middle">${formatCurrency(tx.price)}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-center align-middle">${getStatusBadge(tx.status)}</td>
+                        <td class="p-4 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 align-middle"><small>${snText}</small></td>
                     `;
                     transactionHistoryBody.appendChild(row);
                 });
@@ -401,30 +402,31 @@ Terima Kasih!`;
                     const qr = qrcode(0, 'M'); qr.addData(qrisString); qr.make();
                     historyQrisContainer.innerHTML = qr.createImgTag(6, 0);
                 }
-                historyQrisModal.style.display = 'block';
+                historyQrisModal.classList.remove('hidden');
+                historyQrisModal.classList.add('flex');
             };
 
             // --- Event Listeners Search/Filter ---
             topupSearchBtn.addEventListener('click', () => fetchHistory('topup', topupSearchInput.value));
             txSearchBtn.addEventListener('click', () => fetchHistory('transaction', txSearchInput.value));
             
-            topupDateFilterBtn.addEventListener('click', () => { currentFilterType = 'topup'; dateFilterModal.style.display = 'block'; });
-            txDateFilterBtn.addEventListener('click', () => { currentFilterType = 'transaction'; dateFilterModal.style.display = 'block'; });
-            closeDateModalBtn.addEventListener('click', () => dateFilterModal.style.display = 'none');
+            topupDateFilterBtn.addEventListener('click', () => { currentFilterType = 'topup'; showModal(dateFilterModal); });
+            txDateFilterBtn.addEventListener('click', () => { currentFilterType = 'transaction'; showModal(dateFilterModal); });
+            closeDateModalBtn.addEventListener('click', () => hideModalEl(dateFilterModal));
             
             applyDateFilterBtn.addEventListener('click', () => {
                 const start = startDateInput.value; const end = endDateInput.value;
                 if (!start || !end) return alert('Pilih tanggal.');
                 const endD = new Date(end); endD.setHours(23, 59, 59, 999);
                 fetchHistory(currentFilterType, currentFilterType==='topup'?topupSearchInput.value:txSearchInput.value, new Date(start).toISOString(), endD.toISOString());
-                dateFilterModal.style.display = 'none';
+                hideModalEl(dateFilterModal);
             });
 
             // --- Tutup Modal ---
             const hideModals = () => {
-                dateFilterModal.style.display = 'none';
-                txDetailHistoryModal.style.display = 'none';
-                historyQrisModal.style.display = 'none';
+                hideModalEl(dateFilterModal);
+                hideModalEl(txDetailHistoryModal);
+                hideModalEl(historyQrisModal);
             };
             
             closeTxDetailHistoryBtn.addEventListener('click', hideModals);

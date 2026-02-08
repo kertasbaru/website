@@ -1,12 +1,12 @@
-<header class="header">
-    <div class="header-left">
-        <div id="menu-toggle" class="header-icon">☰</div>
-        <div class="balance" id="user-balance">
+<header class="bg-white dark:bg-slate-800/95 border-b border-gray-200 dark:border-slate-700 h-[70px] px-6 flex justify-between items-center sticky top-0 z-[1000] shadow-sm dark:shadow-md transition-colors duration-300 lg:ml-[260px] lg:w-[calc(100%-260px)] lg:px-10">
+    <div class="flex items-center gap-4">
+        <div id="menu-toggle" class="text-xl text-gray-500 dark:text-gray-300 cursor-pointer p-1 rounded-lg hover:text-indigo-500 hover:bg-black/5 lg:hidden">☰</div>
+        <div class="font-bold text-indigo-500 bg-indigo-500/10 px-3.5 py-1.5 rounded-full text-sm" id="user-balance">
             <%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(user.balance || 0) %>
         </div>
     </div>
-    <div class="header-right">
-        <div id="theme-toggle" class="header-icon">☀️</div>
-        <a href="/profile"><div class="profile-pic"></div></a>
+    <div class="flex items-center gap-4">
+        <div id="theme-toggle" class="text-xl text-gray-500 dark:text-gray-300 cursor-pointer p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5">☀️</div>
+        <a href="/profile"><div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-600 border-2 border-white shadow-sm hover:scale-105 transition"></div></a>
     </div>
 </header>

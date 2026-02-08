@@ -5,56 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-layout.css">
-    <link rel="stylesheet" href="/css/style-components.css">
-    <link rel="stylesheet" href="/css/style-pages.css">
-    <link rel="stylesheet" href="/css/style-dark.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body class="dashboard">
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans transition-colors duration-300">
 
     <%- include('partials/sidebar', { user: user }) %>
     <%- include('partials/header', { user: user }) %>
 
-    <main class="main-content">
-        <div class="announcement-card">
-            <h2><i class="fas fa-bullhorn"></i> Pengumuman</h2>
+    <main class="p-6 w-full max-w-7xl mx-auto transition-all lg:ml-[260px] lg:w-[calc(100%-260px)] lg:p-10">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none border-l-[5px] border-l-amber-500 relative overflow-hidden">
+            <h2 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl"><i class="fas fa-bullhorn"></i> Pengumuman</h2>
             
-            <div id="announcement-text" class="info-box-blue" style="text-align: left; white-space: pre-wrap; min-height: 50px;">
+            <div id="announcement-text" class="bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 text-blue-800 dark:text-blue-300 text-sm mt-2.5" style="text-align: left; white-space: pre-wrap; min-height: 50px;">
                 Memuat pengumuman...
             </div>
             
             <% if (user.isAdmin) { %>
-                <button id="edit-announcement-btn" class="edit-announcement-btn" title="Edit Pengumuman">
+                <button id="edit-announcement-btn" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-700 border-none flex justify-center items-center cursor-pointer text-gray-500 dark:text-slate-400 hover:bg-indigo-500 hover:text-white transition" title="Edit Pengumuman">
                     <i class="fas fa-pencil-alt"></i>
                 </button>
             <% } %>
         </div>
 
-        <div class="profile-card" style="margin-top: 20px;">
-            <h3>Selamat Datang, <%= user.username %>!</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none mt-5">
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl">Selamat Datang, <%= user.username %>!</h3>
             <p>Saldo Anda saat ini: <strong><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(user.balance || 0) %></strong></p>
-            <div style="margin-top: 15px;">
-                <a href="/topup" class="btn btn-small btn-success"><i class="fas fa-wallet"></i> Top Up</a>
-                <a href="/riwayat" class="btn btn-small btn-info"><i class="fas fa-history"></i> Riwayat</a>
+            <div class="mt-4">
+                <a href="/topup" class="inline-block px-4 py-2 text-sm font-semibold rounded-lg text-white bg-emerald-500 hover:opacity-90 transition border-none cursor-pointer"><i class="fas fa-wallet"></i> Top Up</a>
+                <a href="/riwayat" class="inline-block px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-500 hover:opacity-90 transition border-none cursor-pointer"><i class="fas fa-history"></i> Riwayat</a>
             </div>
         </div>
     </main>
     
-    <div id="editAnnouncementModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn">&times;</span>
-            <h3>Edit Pengumuman</h3>
+    <div id="editAnnouncementModal" class="hidden fixed inset-0 z-[3000] overflow-auto bg-black/50 backdrop-blur-sm pt-[60px]">
+        <div class="bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 mx-auto p-8 w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 relative animate-slideDown mt-[5%]">
+            <span class="modal-close-btn absolute top-5 right-5 text-gray-400 dark:text-slate-500 text-2xl cursor-pointer hover:text-red-500 transition">&times;</span>
+            <h3 class="mb-5 text-gray-800 dark:text-gray-100 font-bold tracking-tight text-xl">Edit Pengumuman</h3>
             <form id="editAnnouncementForm">
-                <div class="form-group">
-                    <label for="announcementInput">Isi Pengumuman</label>
-                    <textarea id="announcementInput" class="form-input" rows="6" placeholder="Tulis pengumuman disini..."></textarea>
+                <div class="mb-5 text-left">
+                    <label for="announcementInput" class="block mb-2 font-semibold text-sm text-gray-800 dark:text-slate-400">Isi Pengumuman</label>
+                    <textarea id="announcementInput" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl text-[0.95rem] bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition" rows="6" placeholder="Tulis pengumuman disini..."></textarea>
                 </div>
-                <div class="modal-button-container">
-                    <button type="button" class="btn closeModalBtn btn-danger">Batal</button>
-                    <button type="submit" class="btn">Simpan</button>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="closeModalBtn w-full py-3.5 rounded-xl bg-red-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Batal</button>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5 transition border-none cursor-pointer">Simpan</button>
                 </div>
             </form>
         </div>
@@ -94,7 +90,8 @@
                 editBtn.addEventListener('click', () => {
                     // Isi textarea dengan teks saat ini
                     announcementInput.value = announcementText.textContent;
-                    editModal.style.display = 'block';
+                    editModal.classList.remove('hidden');
+                    editModal.classList.add('flex');
                 });
 
                 editForm.addEventListener('submit', async (e) => {
@@ -130,7 +127,8 @@
             
             // 3. Manajemen Modal (Tutup)
             const hideModal = () => {
-                editModal.style.display = 'none';
+                editModal.classList.add('hidden');
+                editModal.classList.remove('flex');
             };
             closeModalBtns.forEach(btn => btn.addEventListener('click', hideModal));
             window.addEventListener('click', (e) => {

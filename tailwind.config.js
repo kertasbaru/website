@@ -4,9 +4,18 @@ module.exports = {
     './views/**/*.ejs',
     './index.html',
   ],
-  darkMode: 'class',
+  darkMode: ['class', '.dark-theme'],
   theme: {
     extend: {
+      keyframes: {
+        slideDown: {
+          from: { transform: 'translateY(-20px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
+      animation: {
+        slideDown: 'slideDown 0.3s ease-out',
+      },
       colors: {
         primary: {
           DEFAULT: '#6366f1',
