@@ -5,46 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - WUZZSTORE</title>
     
-    <link rel="stylesheet" href="/css/style-variables.css">
-    <link rel="stylesheet" href="/css/style-auth.css">
-    <link rel="stylesheet" href="/css/style-components.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
 </head>
-<body>
+<body class="bg-slate-900 text-white overflow-hidden flex justify-center items-center min-h-screen font-sans" style="background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%);">
     <div class="stars-bg">
         <div class="stars"></div>
         <div class="stars"></div>
         <div class="stars"></div>
     </div>
 
-    <div class="auth-container">
-        <h1 class="brand-title">WUZZSTORE</h1>
+    <div class="bg-slate-800/70 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/10 w-full max-w-sm text-center hover:-translate-y-1 transition">
+        <h1 class="text-4xl font-extrabold tracking-tight bg-gradient-to-br from-white to-indigo-300 bg-clip-text text-transparent mb-6">WUZZSTORE</h1>
         
         <form action="/api/register" method="POST">
-            <div class="form-group">
-                <label for="username" style="text-align: left;">Username</label>
-                <input type="text" id="username" name="username" class="form-input" placeholder="Pilih username unik" required>
+            <div class="mb-5">
+                <label for="username" class="text-slate-300 text-sm font-semibold text-left block mb-2">Username</label>
+                <input type="text" id="username" name="username" class="w-full px-4 py-3 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 outline-none" placeholder="Pilih username unik" required>
             </div>
             
-            <div class="form-group">
-                <label for="phone" style="text-align: left;">Nomor HP</label>
-                <input type="tel" id="phone" name="phone" class="form-input" placeholder="Contoh: 08123456789" required>
+            <div class="mb-5">
+                <label for="phone" class="text-slate-300 text-sm font-semibold text-left block mb-2">Nomor HP</label>
+                <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 outline-none" placeholder="Contoh: 08123456789" required>
             </div>
             
-            <div class="form-group">
-                <label for="email" style="text-align: left;">Email</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="email@contoh.com" required>
+            <div class="mb-5">
+                <label for="email" class="text-slate-300 text-sm font-semibold text-left block mb-2">Email</label>
+                <input type="email" id="email" name="email" class="w-full px-4 py-3 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 outline-none" placeholder="email@contoh.com" required>
             </div>
             
-            <div class="form-group">
-                <label for="password" style="text-align: left;">Password</label>
-                <input type="password" id="password" name="password" class="form-input" placeholder="Buat password kuat" required>
+            <div class="mb-5">
+                <label for="password" class="text-slate-300 text-sm font-semibold text-left block mb-2">Password</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-3 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 outline-none" placeholder="Buat password kuat" required>
             </div>
             
-            <button type="submit" class="btn">Register</button>
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5 hover:shadow-indigo-500/40 transition">Register</button>
         </form>
         
-        <p style="margin-top: 15px; font-size: 0.9rem; color: #555;">
-            Sudah punya akun? <a href="/login" style="color: #5c67f2; text-decoration: none; font-weight: bold;">Login di sini</a>
+        <p class="mt-4 text-sm text-slate-400">
+            Sudah punya akun? <a href="/login" class="text-indigo-400 font-bold hover:text-white hover:underline transition">Login di sini</a>
         </p>
     </div>
 </body>

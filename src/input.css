@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Font Modern: Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Modern Scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+/* Starfield Animation (Login/Register) */
+@layer components {
+  .stars-bg {
+    @apply fixed top-0 left-0 w-full h-full -z-10 pointer-events-none;
+  }
+
+  .stars {
+    @apply absolute top-0 left-0 w-full h-full opacity-0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+      radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+      radial-gradient(1px 1px at 50px 160px, #fff, transparent),
+      radial-gradient(2px 2px at 90px 40px, #fff, transparent),
+      radial-gradient(2px 2px at 150px 120px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 120px 200px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: zoom 10s linear infinite;
+  }
+
+  .stars:nth-child(2) {
+    background-position: 100px 100px;
+    background-size: 300px 300px;
+    animation-delay: 2s;
+    animation-duration: 15s;
+  }
+
+  .stars:nth-child(3) {
+    background-position: -50px -50px;
+    background-size: 400px 400px;
+    animation-delay: 5s;
+    animation-duration: 20s;
+  }
+
+  /* Loading Spinner */
+  .spinner {
+    @apply w-10 h-10 rounded-full;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #6366f1;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* Loading Line */
+  .loading-line {
+    @apply absolute bottom-0 left-0 w-full overflow-hidden;
+    height: 3px;
+    background-color: #e5e7eb;
+  }
+  .loading-line::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    animation: loading-line-animation 1.5s infinite;
+  }
+}
+
+@keyframes zoom {
+  0% { transform: scale(1); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes iconPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes loading-line-animation {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
