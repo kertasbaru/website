@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { api } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { formatRupiah } from '../utils/helpers';
 import { Card, PageTitle, StatusBadge, LoadingSpinner } from '../components/UI';
 import Modal from '../components/Modal';
@@ -92,7 +92,7 @@ export default function NoOtp() {
           setResultModal((prev) => ({ ...prev, status: data.status, message: data.message }));
           refreshUser();
         }
-      } catch {}
+      } catch (err) { console.error('Polling error:', err); }
     }, 3000);
   };
 

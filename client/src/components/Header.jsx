@@ -1,6 +1,6 @@
 import { FiMenu, FiUser, FiDollarSign } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { formatRupiah } from '../utils/helpers';
 
 export default function Header({ onMenuToggle }) {

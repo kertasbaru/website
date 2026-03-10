@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { formatRupiah } from '../utils/helpers';
 import { Card, PageTitle } from '../components/UI';
@@ -8,7 +8,7 @@ import Modal from '../components/Modal';
 import { FiHome, FiDollarSign, FiClock, FiVolume2 } from 'react-icons/fi';
 
 export default function Dashboard() {
-  const { user, refreshUser } = useAuth();
+  const { user } = useAuth();
   const [announcement, setAnnouncement] = useState('Memuat pengumuman...');
   const [editModal, setEditModal] = useState(false);
   const [editText, setEditText] = useState('');

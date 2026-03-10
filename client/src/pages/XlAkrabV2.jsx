@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { api } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
-import { formatRupiah, ubahKe0 } from '../utils/helpers';
+import { useAuth } from '../hooks/useAuth';
+import { formatRupiah } from '../utils/helpers';
 import { Card, PageTitle, StatusBadge, LoadingSpinner } from '../components/UI';
 import Modal from '../components/Modal';
 import { FiUsers } from 'react-icons/fi';
@@ -26,18 +26,21 @@ export default function XlAkrabV2() {
   const pollingRef = useRef(null);
 
   useEffect(() => {
-    fetchProducts();
-    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+    let ignore = false;
+    async function loadData() {
+      setLoading(true);
+      try {
+        const data = await api.post('/api/xl/list-product');
+        if (ignore) return;
+        if (data.success) setProducts(data.data?.products || []);
+      } catch (err) {
+        if (!ignore) setMessage({ type: 'error', text: err.message });
+      }
+      if (!ignore) setLoading(false);
+    }
+    loadData();
+    return () => { ignore = true; if (pollingRef.current) clearInterval(pollingRef.current); };
   }, []);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const data = await api.post('/api/xl/list-product');
-      if (data.success) setProducts(data.data?.products || []);
-    } catch (err) { setMessage({ type: 'error', text: err.message }); }
-    setLoading(false);
-  };
 
   const filtered = products.filter((p) => {
     const code = (p.code || p.name || '').toLowerCase();
@@ -73,7 +76,7 @@ export default function XlAkrabV2() {
           setResultModal((prev) => ({ ...prev, status: data.status, message: data.message }));
           refreshUser();
         }
-      } catch {}
+      } catch (err) { console.error('Polling error:', err); }
     }, 3000);
   };
 

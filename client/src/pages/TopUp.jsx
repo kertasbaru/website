@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { formatRupiah } from '../utils/helpers';
 import { Card, PageTitle, StatusBadge, LoadingSpinner } from '../components/UI';
 import Modal from '../components/Modal';
@@ -20,7 +20,7 @@ export default function TopUp() {
     try {
       const data = await api.get('/api/deposits/pending');
       setPendingDeposits(data);
-    } catch {}
+    } catch (err) { console.error('Fetch pending error:', err); }
   };
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function TopUp() {
           fetchPending();
           setMessage({ type: 'success', text: `Deposit ${topUpId} berhasil!` });
         }
-      } catch {}
+      } catch (err) { console.error('Polling error:', err); }
     }, 3000);
   };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { Card, PageTitle } from '../components/UI';
 import { FiSettings, FiSave, FiKey, FiRefreshCw, FiLink, FiLock } from 'react-icons/fi';
