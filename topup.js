@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const pool = require('./database.js'); 
 const { createLogger } = require('./logger.js');
 const log = createLogger('Topup');
@@ -15,14 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 const PORT = 3001;
 
 // ---------------------------------------------------------
-// ROUTE 1: Menampilkan Halaman HTML (Interface)
-// ---------------------------------------------------------
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// ---------------------------------------------------------
-// ROUTE 2: API Pemrosesan Deposit (Logic Anda)
+// API Pemrosesan Deposit
 // ---------------------------------------------------------
 app.get("/nurul", async (req, res) => {
   const amount = parseInt(req.query.amount);
