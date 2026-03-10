@@ -15,7 +15,7 @@ OK="${Green}--->${FONT}"
 ERROR="${RED}[ERROR]${FONT}"
 NC='\e[0m'
 
-# Pengecekan User Root: Script ini memrlukan akses root untuk install paket & konfigurasi sistem
+# Pengecekan User Root: Script ini memerlukan akses root untuk install paket & konfigurasi sistem
 if [[ $EUID -ne 0 ]]; then
    echo -e "${ERROR} Skrip ini harus dijalankan sebagai root. Gunakan: sudo ./install.sh" 
    exit 1
