@@ -7,7 +7,7 @@
 const LOG_LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3 };
 
 // Ambil level dari environment, default INFO
-const currentLevel = LOG_LEVELS[(process.env.LOG_LEVEL || 'DEBUG').toUpperCase()] ?? LOG_LEVELS.INFO;
+const currentLevel = LOG_LEVELS[(process.env.LOG_LEVEL || 'INFO').toUpperCase()] ?? LOG_LEVELS.INFO;
 
 /**
  * Memformat pesan log dengan timestamp dan level.

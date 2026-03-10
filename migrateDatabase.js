@@ -97,11 +97,12 @@ async function migrateDatabase() {
                 await conn.query('ALTER TABLE `deposits` CHANGE `top_up_id` `id` VARCHAR(20)');
                 log.info('[deposits] Kolom top_up_id → id');
 
-                // Tambah kembali FK
+                // Tambah kembali FK jika belum ada
                 try {
                     await conn.query('ALTER TABLE `deposits` ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE');
+                    log.info('[deposits] Foreign key user_id berhasil ditambahkan kembali.');
                 } catch (e) {
-                    log.warn('[deposits] Gagal menambahkan FK, mungkin tipe data user.id berbeda: ' + e.message);
+                    log.warn('[deposits] Foreign key tidak ditambahkan (mungkin sudah ada atau tipe data berbeda): ' + e.message);
                 }
             }
 

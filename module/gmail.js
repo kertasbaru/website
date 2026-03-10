@@ -114,7 +114,7 @@ async function sendResetLinkEmail(email, token, config) {
     });
     return res.data;
   } catch (err) {
-    log.info(`Gagal mengirim link reset password: ${err.message}`);
+    log.error(`Gagal mengirim link reset password: ${err.message}`);
     throw new Error('Gagal mengirim link reset password');
   }
 }
