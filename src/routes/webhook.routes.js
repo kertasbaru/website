@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
+const pool = require('../db');
 const axios = require('axios');
-const { getTransactionInfo: getTransactionInfoKaje } = require('../module/kaje.js');
-const { getTransactionInfoFlaz } = require('../module/flaz.js');
-const { createLogger } = require('../logger.js');
+const { getTransactionInfo: getTransactionInfoKaje } = require('../services/providers/kaje');
+const { getTransactionInfoFlaz } = require('../services/providers/flaz');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Webhook');
 
 // --- Konfigurasi ---
-const config = require('../config.js');
+const config = require('../config');
 
 // --- Helper Database ---
 const dbGet = async (sql, params = []) => {

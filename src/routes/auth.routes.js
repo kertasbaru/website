@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
+const pool = require('../db');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 
-const { isAuthenticated } = require('../middleware/auth.js');
-const { generateOTP } = require('../module/function.js');
-const { sendOTP, verifOTP, sendResetLinkEmail } = require('../module/gmail.js');
-const { createLogger } = require('../logger.js');
+const { isAuthenticated } = require('../middleware/auth');
+const { generateOTP } = require('../utils/helpers');
+const { sendOTP, verifOTP, sendResetLinkEmail } = require('../services/mail/gmail');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Auth');
 
-const config = require('../config.js');
+const config = require('../config');
 const saltRounds = 10;
 
 // Token expiry durations

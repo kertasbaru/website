@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
-const { isAuthenticated, isAdmin } = require('../middleware/auth.js');
-const { createLogger } = require('../logger.js');
+const pool = require('../db');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Admin');
 
 const dbAll = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows; };

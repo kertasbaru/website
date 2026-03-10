@@ -1,6 +1,6 @@
 .env
 node_modules
 github
-webhook_topup/.env
+scripts/.env
 client/node_modules
 client/dist

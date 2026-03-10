@@ -1,7 +1,7 @@
 // Mengimpor library yang dibutuhkan
 const mysql = require('mysql2/promise'); // Driver MySQL yang mendukung async/await (promise)
-const config = require('./config.js');   // Konfigurasi dari .env
-const { createLogger } = require('./logger.js');
+const config = require('../config');   // Konfigurasi dari .env
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Database');
 
 // Mengambil objek konfigurasi spesifik untuk database

@@ -1,6 +1,6 @@
 const { google } = require('googleapis'); // Library resmi Google API
 const axios = require('axios');           // Diperlukan untuk fungsi emailReceiver
-const { createLogger } = require('../logger.js');
+const { createLogger } = require('../../utils/logger');
 const log = createLogger('Gmail');
 
 // Fungsi Helper: Melakukan otentikasi OAuth2 ke Google
@@ -173,7 +173,7 @@ async function emailReceiver(config) {
 }
 
 // Fungsi 4: Verifikasi OTP (diimpor dari module/function.js)
-const { verifOTP } = require('./function.js');
+const { verifOTP } = require('../../utils/helpers');
 
 module.exports = {
   sendOTP,

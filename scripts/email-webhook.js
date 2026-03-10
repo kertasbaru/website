@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const { google } = require('googleapis');
 const axios = require('axios');
-const { createLogger } = require('../logger.js');
+const { createLogger } = require('../src/utils/logger');
 const log = createLogger('EmailBot');
 
 const CLIENT_ID = process.env.GMAIL_CLIENT_ID;

@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
+const pool = require('../db');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const { isAuthenticated } = require('../middleware/auth.js');
-const { generateRandomString, cekNomorXl, ubahKe62, ubahKe0 } = require('../module/function.js');
-const { requestOtp, loginOtp, checkSession, checkQuotas, getProducts, buyPackage } = require('../module/kaje.js');
-const { getAkrabStockFlaz, inviteAkrabMember } = require('../module/flaz.js');
-const { getProductKhfy, orderProductKhfy } = require('../module/khfy.js');
-const { getListProduct, orderProduct } = require('../module/kaje.js');
-const { createLogger } = require('../logger.js');
+const { isAuthenticated } = require('../middleware/auth');
+const { generateRandomString, cekNomorXl, ubahKe62, ubahKe0 } = require('../utils/helpers');
+const { requestOtp, loginOtp, checkSession, checkQuotas, getProducts, buyPackage } = require('../services/providers/kaje');
+const { getAkrabStockFlaz, inviteAkrabMember } = require('../services/providers/flaz');
+const { getProductKhfy, orderProductKhfy } = require('../services/providers/khfy');
+const { getListProduct, orderProduct } = require('../services/providers/kaje');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Services');
 
-const config = require('../config.js');
+const config = require('../config');
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
@@ -253,7 +253,7 @@ router.post('/v3/xl/stock-khfy', isAuthenticated, async (req, res) => {
         const productData = await getProductKhfy(config);
         if (!productData.ok || !Array.isArray(productData.data)) throw new Error(productData.message || 'Gagal mengambil data stok.');
 
-        const akrabJsonPath = path.join(__dirname, '..', 'akrab.json');
+        const akrabJsonPath = path.join(__dirname, '..', 'data', 'akrab.json');
         const localAkrabData = JSON.parse(fs.readFileSync(akrabJsonPath, 'utf-8'));
         const mergedData = productData.data.map(liveProduct => {
             const localDetails = localAkrabData.find(localProduct => localProduct.code === liveProduct.type);
@@ -277,7 +277,7 @@ router.post('/xl/akrabv3/order', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const akrabJsonPath = path.join(__dirname, '..', 'akrab.json');
+        const akrabJsonPath = path.join(__dirname, '..', 'data', 'akrab.json');
         const localAkrabData = JSON.parse(fs.readFileSync(akrabJsonPath, 'utf-8'));
         const product = localAkrabData.find(p => p.code === code);
         if (!product) throw new Error('Produk tidak ditemukan.');

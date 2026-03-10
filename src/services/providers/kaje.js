@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { createLogger } = require('../logger.js');
+const { createLogger } = require('../../utils/logger');
 const log = createLogger('Kaje');
 
 async function requestOtp(number, config) {

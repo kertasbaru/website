@@ -1,6 +1,6 @@
 const axios = require('axios'); // Library HTTP Request
-const { generateRandomString } = require('./function.js'); // Import helper untuk membuat Reff ID unik
-const { createLogger } = require('../logger.js');
+const { generateRandomString } = require('../../utils/helpers'); // Import helper untuk membuat Reff ID unik
+const { createLogger } = require('../../utils/logger');
 const log = createLogger('KHFY');
 
 // Fungsi 1: Mengambil Data Produk / Stok dari KHFY

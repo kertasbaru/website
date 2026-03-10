@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
+const pool = require('../db');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { isAuthenticated } = require('../middleware/auth.js');
-const { createLogger } = require('../logger.js');
+const { isAuthenticated } = require('../middleware/auth');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Profile');
 
 const saltRounds = 10;

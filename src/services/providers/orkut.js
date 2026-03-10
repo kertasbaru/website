@@ -1,6 +1,6 @@
 const axios = require('axios');
 const qs = require('qs');
-const { createLogger } = require('../logger.js');
+const { createLogger } = require('../../utils/logger');
 const log = createLogger('Orkut');
 
 // Helper untuk membuat Timestamp (Unix Milliseconds)

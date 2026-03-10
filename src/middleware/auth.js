@@ -1,9 +1,9 @@
-const pool = require('../database.js'); // Mengimpor koneksi database
+const pool = require('../db'); // Mengimpor koneksi database
 const jwt = require('jsonwebtoken');
 
 // Membaca konfigurasi dari .env
-const config = require('../config.js');
-const { createLogger } = require('../logger.js');
+const config = require('../config');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Auth');
 
 // Fungsi Helper untuk mengambil satu baris data dari database

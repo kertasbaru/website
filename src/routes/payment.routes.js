@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database.js');
+const pool = require('../db');
 
-const { isAuthenticated } = require('../middleware/auth.js');
-const { generateDynamicQris } = require('../module/qris.js');
-const { generateRandomString } = require('../module/function.js');
-const { createLogger } = require('../logger.js');
+const { isAuthenticated } = require('../middleware/auth');
+const { generateDynamicQris } = require('../services/providers/qris');
+const { generateRandomString } = require('../utils/helpers');
+const { createLogger } = require('../utils/logger');
 const log = createLogger('Payment');
 
-const config = require('../config.js');
+const config = require('../config');
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };

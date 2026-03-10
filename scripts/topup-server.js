@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./database.js'); 
-const { createLogger } = require('./logger.js');
+const pool = require('../src/db'); 
+const { createLogger } = require('../src/utils/logger');
 const log = createLogger('Topup');
 
 const app = express();

@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 // Import Sub-Routers
-const authRoutes = require('./api-auth');
-const profileRoutes = require('./api-profile');
-const paymentRoutes = require('./api-payment');
-const servicesRoutes = require('./api-services');
-const historyRoutes = require('./api-history');
-const adminRoutes = require('./api-admin');
+const authRoutes = require('./auth.routes');
+const profileRoutes = require('./profile.routes');
+const paymentRoutes = require('./payment.routes');
+const servicesRoutes = require('./services.routes');
+const historyRoutes = require('./history.routes');
+const adminRoutes = require('./admin.routes');
 
 // Gunakan Sub-Routers
 router.use('/', authRoutes);

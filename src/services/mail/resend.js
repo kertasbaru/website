@@ -1,5 +1,5 @@
 const { Resend } = require('resend'); // Mengimpor library Resend
-const { createLogger } = require('../logger.js');
+const { createLogger } = require('../../utils/logger');
 const log = createLogger('SendMail');
 
 // Fungsi 1: Mengirim Kode OTP via Resend
@@ -83,6 +83,6 @@ async function sendResetLinkEmail(email, token, config) {
 }
 
 // Fungsi 3: Verifikasi OTP (diimpor dari module/function.js)
-const { verifOTP } = require('./function.js');
+const { verifOTP } = require('../../utils/helpers');
 
 module.exports = { sendOTP, verifOTP, sendResetLinkEmail };

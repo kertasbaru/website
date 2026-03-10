@@ -11,8 +11,8 @@
 //   - transactions: meta_data TEXT → JSON
 
 const mysql = require('mysql2/promise');
-const config = require('./config.js');
-const { createLogger } = require('./logger.js');
+const config = require('../src/config');
+const { createLogger } = require('../src/utils/logger');
 const log = createLogger('Migrasi');
 
 const dbConfig = config.MYSQL;
