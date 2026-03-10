@@ -7,6 +7,7 @@ const config = {
     },
     SECRET: {
         JWT: process.env.SECRET_JWT || '',
+        REFRESH: process.env.SECRET_REFRESH || '',
         WEBHOOK: process.env.SECRET_WEBHOOK || ''
     },
     URL: {

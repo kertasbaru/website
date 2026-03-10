@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { setTokens } from '../utils/api';
 
 export default function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -22,6 +23,8 @@ export default function Login() {
       if (data.needVerification) {
         navigate('/verify-otp', { state: { email: data.email } });
       } else {
+        // Simpan JWT tokens
+        setTokens(data.accessToken, data.refreshToken);
         window.location.href = '/dashboard';
       }
     } catch (err) {

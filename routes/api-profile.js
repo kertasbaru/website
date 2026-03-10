@@ -15,7 +15,7 @@ router.post('/profile/update', isAuthenticated, async (req, res) => {
     const telegramValue = telegram || null;
     try {
         await dbRun(`UPDATE users SET username = ?, phone = ?, email = ?, telegram = ? WHERE id = ?`, 
-            [username, phone, email, telegramValue, req.session.userId]);
+            [username, phone, email, telegramValue, req.userId]);
         res.json({ success: true, message: 'Profil berhasil diperbarui!' });
     } catch (err) {
         log.error('Profile update error: ' + err.message);
@@ -29,7 +29,7 @@ router.post('/profile/update-webhook', isAuthenticated, async (req, res) => {
         return res.status(400).json({ success: false, message: 'URL webhook tidak valid. Harus diawali dengan http:// atau https://' });
     }
     try {
-        await dbRun(`UPDATE users SET webhook_url = ? WHERE id = ?`, [webhook, req.session.userId]);
+        await dbRun(`UPDATE users SET webhook_url = ? WHERE id = ?`, [webhook, req.userId]);
         res.json({ success: true, message: 'URL Webhook berhasil diperbarui!' });
     } catch (err) {
         log.error('Update webhook error: ' + err.message);
@@ -44,7 +44,7 @@ router.post('/password/update', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const [rows] = await connection.execute(`SELECT password FROM users WHERE id = ? FOR UPDATE`, [req.session.userId]);
+        const [rows] = await connection.execute(`SELECT password FROM users WHERE id = ? FOR UPDATE`, [req.userId]);
         const user = rows[0];
         
         if (!user) throw new Error('Pengguna tidak ditemukan.');
@@ -52,7 +52,7 @@ router.post('/password/update', isAuthenticated, async (req, res) => {
         if (!match) throw new Error('Password sebelumnya salah.');
         
         const newHash = await bcrypt.hash(newPassword, saltRounds);
-        await connection.execute(`UPDATE users SET password = ? WHERE id = ?`, [newHash, req.session.userId]);
+        await connection.execute(`UPDATE users SET password = ? WHERE id = ?`, [newHash, req.userId]);
         
         await connection.commit();
         res.json({ success: true, message: 'Password berhasil diubah!' });
@@ -67,7 +67,7 @@ router.post('/password/update', isAuthenticated, async (req, res) => {
 router.post('/apikey/regenerate', isAuthenticated, async (req, res) => {
     try {
         const newApiKey = uuidv4();
-        await dbRun(`UPDATE users SET api_key = ? WHERE id = ?`, [newApiKey, req.session.userId]);
+        await dbRun(`UPDATE users SET api_key = ? WHERE id = ?`, [newApiKey, req.userId]);
         res.json({ success: true, newApiKey });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Gagal membuat API Key baru.' });

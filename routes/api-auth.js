@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../database.js');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateOTP } = require('../module/function.js');
@@ -13,9 +14,26 @@ const log = createLogger('Auth');
 const config = require('../config.js');
 const saltRounds = 10;
 
+// Token expiry durations
+const ACCESS_TOKEN_EXPIRY = '15m';   // Access token berlaku 15 menit
+const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 hari dalam ms
+
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
 const dbRun = async (sql, params = []) => { const [result] = await pool.execute(sql, params); return result; };
+
+// Helper: Generate access token
+const generateAccessToken = (userId) => {
+    return jwt.sign({ userId }, config.SECRET.JWT, { expiresIn: ACCESS_TOKEN_EXPIRY });
+};
+
+// Helper: Generate & store refresh token
+const generateRefreshToken = async (userId) => {
+    const refreshToken = jwt.sign({ userId, type: 'refresh' }, config.SECRET.REFRESH, { expiresIn: '7d' });
+    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS);
+    await dbRun('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, refreshToken, expiresAt]);
+    return refreshToken;
+};
 
 // --- Register ---
 router.post('/register', async (req, res) => {
@@ -80,8 +98,19 @@ router.post('/login', async (req, res) => {
             return res.json({ success: true, needVerification: true, message: 'Akun belum diverifikasi. OTP telah dikirim.', email: user.email });
         }
 
+        // Generate JWT tokens
+        const accessToken = generateAccessToken(user.id);
+        const refreshToken = await generateRefreshToken(user.id);
+
+        // Tetap set session untuk backward compatibility
         req.session.userId = user.id;
-        res.json({ success: true, message: 'Login berhasil!' });
+
+        res.json({ 
+            success: true, 
+            message: 'Login berhasil!',
+            accessToken,
+            refreshToken
+        });
 
     } catch (err) {
         log.error('Login error: ' + err.message);
@@ -92,7 +121,7 @@ router.post('/login', async (req, res) => {
 // --- Get User Data ---
 router.get('/user', isAuthenticated, async (req, res) => {
     try {
-        const user = await dbGet(`SELECT id, username, phone, email, telegram, balance, api_key, webhook_url FROM users WHERE id = ?`, [req.session.userId]);
+        const user = await dbGet(`SELECT id, username, phone, email, telegram, balance, api_key, webhook_url FROM users WHERE id = ?`, [req.userId]);
         if (!user) return res.status(404).json({ success: false, message: "User tidak ditemukan." });
 
         const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
@@ -179,6 +208,61 @@ router.post('/auth/reset-password', async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     } finally {
         if (connection) connection.release();
+    }
+});
+
+// --- Refresh Token ---
+router.post('/auth/refresh-token', async (req, res) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+        return res.status(400).json({ success: false, message: 'Refresh token diperlukan.' });
+    }
+
+    try {
+        // Verifikasi refresh token JWT
+        const decoded = jwt.verify(refreshToken, config.SECRET.REFRESH);
+
+        // Cek apakah refresh token ada di database dan belum expired
+        const storedToken = await dbGet(
+            'SELECT * FROM refresh_tokens WHERE token = ? AND user_id = ? AND expires_at > NOW()',
+            [refreshToken, decoded.userId]
+        );
+
+        if (!storedToken) {
+            return res.status(401).json({ success: false, message: 'Refresh token tidak valid atau telah kedaluwarsa.' });
+        }
+
+        // Generate access token baru
+        const accessToken = generateAccessToken(decoded.userId);
+
+        res.json({ success: true, accessToken });
+    } catch (err) {
+        log.error('Refresh token error: ' + err.message);
+        return res.status(401).json({ success: false, message: 'Refresh token tidak valid.' });
+    }
+});
+
+// --- Logout (Token-based) ---
+router.post('/auth/logout', async (req, res) => {
+    const { refreshToken } = req.body;
+
+    try {
+        // Hapus refresh token dari database jika diberikan
+        if (refreshToken) {
+            await dbRun('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]);
+        }
+
+        // Hapus session juga jika ada
+        if (req.session) {
+            req.session.destroy((err) => {
+                if (err) log.error('Session destroy error: ' + err.message);
+            });
+        }
+
+        res.json({ success: true, message: 'Logout berhasil.' });
+    } catch (err) {
+        log.error('Logout error: ' + err.message);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan saat logout.' });
     }
 });
 

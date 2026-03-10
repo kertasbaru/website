@@ -17,7 +17,7 @@ const dbAll = async (sql, params = []) => { const [rows] = await pool.execute(sq
 // --- Deposit QRIS ---
 router.post('/payment/generate-qris', isAuthenticated, async (req, res) => {
     const { baseAmount } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!baseAmount || isNaN(baseAmount) || baseAmount < 10000) {
         return res.status(400).json({ message: "Jumlah top up minimal Rp 10.000." });
     }
@@ -51,7 +51,7 @@ router.post('/payment/generate-qris', isAuthenticated, async (req, res) => {
 // --- Deposit Transfer Manual ---
 router.post('/payment/generate-topup', isAuthenticated, async (req, res) => {
     const { baseAmount } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!baseAmount || isNaN(baseAmount) || baseAmount < 10000) {
         return res.status(400).json({ message: "Jumlah top up minimal Rp 10.000." });
     }
@@ -84,7 +84,7 @@ router.post('/payment/generate-topup', isAuthenticated, async (req, res) => {
 // --- Detail & Status ---
 router.get('/deposits/pending', isAuthenticated, async (req, res) => {
     try {
-        const rows = await dbAll(`SELECT id, amount, status FROM deposits WHERE user_id = ? AND status = 'PENDING' ORDER BY created_at DESC`, [req.session.userId]);
+        const rows = await dbAll(`SELECT id, amount, status FROM deposits WHERE user_id = ? AND status = 'PENDING' ORDER BY created_at DESC`, [req.userId]);
         res.json(rows);
     } catch (err) {
         log.error('Get pending deposits error: ' + err.message);
@@ -95,7 +95,7 @@ router.get('/deposits/pending', isAuthenticated, async (req, res) => {
 router.get('/deposit/details/:topUpId', isAuthenticated, async (req, res) => {
     const { topUpId } = req.params;
     try {
-        const row = await dbGet(`SELECT amount FROM deposits WHERE id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.session.userId]);
+        const row = await dbGet(`SELECT amount FROM deposits WHERE id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.userId]);
         if (!row) return res.status(404).json({ message: "Deposit tidak ditemukan atau sudah dibayar." });
         const finalQrisString = generateDynamicQris(config.DATAQRIS, row.amount);
         res.json({ qrisString: finalQrisString, finalAmount: row.amount, topUpId, rekening: config.JAGO });
@@ -108,7 +108,7 @@ router.get('/deposit/details/:topUpId', isAuthenticated, async (req, res) => {
 router.get('/deposit/detailsv2/:topUpId', isAuthenticated, async (req, res) => {
     const { topUpId } = req.params;
     try {
-        const row = await dbGet(`SELECT amount FROM deposits WHERE id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.session.userId]);
+        const row = await dbGet(`SELECT amount FROM deposits WHERE id = ? AND user_id = ? AND status = 'PENDING'`, [topUpId, req.userId]);
         if (!row) return res.status(404).json({ message: "Deposit tidak ditemukan atau sudah dibayar." });
         res.json({ norek: config.JAGO, finalAmount: row.amount, topUpId });
     } catch (error) {
@@ -121,9 +121,9 @@ router.get('/deposit/detailsv2/:topUpId', isAuthenticated, async (req, res) => {
 const checkDepositStatusHandler = async (req, res) => {
     const { topUpId } = req.params;
     try {
-        let row = await dbGet(`SELECT status FROM deposit_history WHERE deposit_id = ? AND user_id = ?`, [topUpId, req.session.userId]);
+        let row = await dbGet(`SELECT status FROM deposit_history WHERE deposit_id = ? AND user_id = ?`, [topUpId, req.userId]);
         if (row) return res.json({ status: row.status });
-        row = await dbGet(`SELECT status FROM deposits WHERE id = ? AND user_id = ?`, [topUpId, req.session.userId]);
+        row = await dbGet(`SELECT status FROM deposits WHERE id = ? AND user_id = ?`, [topUpId, req.userId]);
         if (row) return res.json({ status: row.status });
         return res.status(404).json({ message: "Deposit tidak ditemukan." });
     } catch (err) {
@@ -138,7 +138,7 @@ router.get('/deposit/statusv2/:topUpId', isAuthenticated, checkDepositStatusHand
 // Pembatalan Deposit
 const cancelDepositHandler = async (req, res) => {
     const { topUpId } = req.params;
-    const userId = req.session.userId;
+    const userId = req.userId;
     let connection;
     try {
         connection = await pool.getConnection();

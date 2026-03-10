@@ -12,7 +12,7 @@ router.post('/history/topups', isAuthenticated, async (req, res) => {
     const { searchTerm, startDate, endDate } = req.body;
     try {
         let query = `SELECT deposit_id, amount, status, updated_at FROM deposit_history WHERE user_id = ?`;
-        const params = [req.session.userId];
+        const params = [req.userId];
         if (searchTerm) {
             query += ` AND (deposit_id LIKE ? OR amount LIKE ? OR status LIKE ?)`;
             params.push(`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`);
@@ -34,7 +34,7 @@ router.post('/history/transactions', isAuthenticated, async (req, res) => {
     const { searchTerm, startDate, endDate } = req.body;
     try {
         let query = `SELECT ref_id, product_name, destination, status, serial_number, price, updated_at, payment_method, payment_info, message FROM transactions WHERE user_id = ?`;
-        const params = [req.session.userId];
+        const params = [req.userId];
         if (searchTerm) {
             query += ` AND (ref_id LIKE ? OR product_name LIKE ? OR destination LIKE ? OR price LIKE ? OR payment_method LIKE ? OR status LIKE ? OR message LIKE ?)`;
             const searchTermLike = `%${searchTerm}%`;
@@ -56,7 +56,7 @@ router.post('/history/transactions', isAuthenticated, async (req, res) => {
 router.get('/transaction/status/:ref_id', isAuthenticated, async (req, res) => {
     const { ref_id } = req.params;
     try {
-        const transaction = await dbGet(`SELECT status, payment_method, payment_info, message FROM transactions WHERE ref_id = ? AND user_id = ?`, [ref_id, req.session.userId]);
+        const transaction = await dbGet(`SELECT status, payment_method, payment_info, message FROM transactions WHERE ref_id = ? AND user_id = ?`, [ref_id, req.userId]);
         if (!transaction) return res.status(404).json({ success: false, message: 'Transaksi tidak ditemukan.' });
         res.json({ success: true, ...transaction });
     } catch (error) {

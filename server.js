@@ -38,7 +38,7 @@ app.use(session({
 app.use('/api', apiRoutes);
 app.use('/', webhookRoutes);
 
-// --- Rute Logout (perlu sesi) ---
+// --- Rute Logout (session-based fallback) ---
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('connect.sid');

@@ -42,11 +42,11 @@ router.post('/xl/login-otp', isAuthenticated, async (req, res) => {
     try {
         const responseData = await loginOtp(formattedNumber, otp, config);
         if (responseData && responseData.success) {
-            const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.session.userId]);
+            const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.userId]);
             let numbers = JSON.parse(user.otp_numbers || '[]');
             if (!numbers.some(item => item.number === formattedNumber)) {
                 numbers.push({ number: formattedNumber });
-                await dbRun(`UPDATE users SET otp_numbers = ? WHERE id = ?`, [JSON.stringify(numbers), req.session.userId]);
+                await dbRun(`UPDATE users SET otp_numbers = ? WHERE id = ?`, [JSON.stringify(numbers), req.userId]);
             }
         }
         res.json(responseData);
@@ -61,7 +61,7 @@ router.post('/xl/check-session', isAuthenticated, async (req, res) => {
     const formattedNumber = ubahKe62(number);
     if (!cekNomorXl(formattedNumber)) return res.status(400).json({ success: false, message: 'Bukan nomor XL/Axis.' });
     try {
-        const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.session.userId]);
+        const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.userId]);
         const numbers = JSON.parse(user.otp_numbers || '[]');
         if (!numbers.some(item => item.number === formattedNumber)) return res.status(403).json({ success: false, message: 'Nomor belum diautentikasi.' });
         
@@ -102,7 +102,7 @@ router.post('/xl/get-products', isAuthenticated, async (req, res) => {
 
 router.post('/xl/buy-package', isAuthenticated, async (req, res) => {
     const { number, code, payment } = req.body; 
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!number || !code || !payment) return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
     
     let connection;
@@ -166,7 +166,7 @@ router.post('/xl/list-product', isAuthenticated, async (req, res) => {
 // v2: Order
 router.post('/xl/akrabv2/order', isAuthenticated, async (req, res) => {
     const { code, destination } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!code || !destination) return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
 
     let connection;
@@ -208,7 +208,7 @@ router.post('/xl/akrabv2/order', isAuthenticated, async (req, res) => {
 // v1: Invite Member
 router.post('/xl/akrab/invite', isAuthenticated, async (req, res) => {
     const { code, parent_name, destination } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!code || !parent_name || !destination) return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
     
     let connection;
@@ -269,7 +269,7 @@ router.post('/v3/xl/stock-khfy', isAuthenticated, async (req, res) => {
 
 router.post('/xl/akrabv3/order', isAuthenticated, async (req, res) => {
     const { code, destination } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!code || !destination) return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
 
     let connection;
@@ -324,7 +324,7 @@ router.post('/no-otp/products', isAuthenticated, async (req, res) => {
 
 router.post('/no-otp/order', isAuthenticated, async (req, res) => {
     const { code, destination } = req.body;
-    const userId = req.session.userId;
+    const userId = req.userId;
     if (!code || !destination) return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
 
     let connection;

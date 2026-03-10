@@ -114,6 +114,21 @@ const createTableQueries = [
       \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       UNIQUE KEY \`uk_product_id\` (\`product_id\`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `,
+
+    // Tabel 'refresh_tokens': Menyimpan refresh token untuk autentikasi JWT
+    `
+    CREATE TABLE IF NOT EXISTS \`refresh_tokens\` (
+      \`id\` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      \`user_id\` INT UNSIGNED NOT NULL,
+      \`token\` VARCHAR(512) NOT NULL,
+      \`expires_at\` DATETIME NOT NULL,
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+      UNIQUE KEY \`uk_token\` (\`token\`),
+      INDEX \`idx_rt_user_id\` (\`user_id\`),
+      INDEX \`idx_rt_expires\` (\`expires_at\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `
 ];
 

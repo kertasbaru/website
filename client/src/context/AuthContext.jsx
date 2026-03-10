@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '../utils/api';
+import { api, clearTokens } from '../utils/api';
 import { AuthContext } from './authContextValue';
 
 export function AuthProvider({ children }) {
@@ -24,7 +24,14 @@ export function AuthProvider({ children }) {
   const refreshUser = () => fetchUser();
 
   const logout = async () => {
-    window.location.href = '/logout';
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      await api.post('/api/auth/logout', { refreshToken });
+    } catch {
+      // Lanjutkan logout meskipun request gagal
+    }
+    clearTokens();
+    window.location.href = '/login';
   };
 
   return (
