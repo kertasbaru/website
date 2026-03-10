@@ -1,7 +1,7 @@
 // =================================================================
 // Script Migrasi Database: Struktur Lama → Struktur Baru
 // =================================================================
-// Jalankan: node migrateDatabase.js
+// Jalankan: node scripts/migrate-db.js
 //
 // Script ini memigrasikan data dari skema lama ke skema baru:
 //   - users: apikey → api_key, number_otp → otp_numbers, webhook → webhook_url
