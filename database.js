@@ -1,6 +1,8 @@
 // Mengimpor library yang dibutuhkan
 const mysql = require('mysql2/promise'); // Driver MySQL yang mendukung async/await (promise)
 const config = require('./config.js');   // Konfigurasi dari .env
+const { createLogger } = require('./logger.js');
+const log = createLogger('Database');
 
 // Mengambil objek konfigurasi spesifik untuk database
 const dbConfig = config.MYSQL;
@@ -24,10 +26,9 @@ async function testConnection() {
     try {
         // Mencoba mengambil satu koneksi dari pool
         connection = await pool.getConnection();
-        console.log("✅ Koneksi database MySQL berhasil.");
+        log.info("Koneksi database MySQL berhasil.");
     } catch (error) {
-        // Jika gagal, tampilkan error dan matikan proses aplikasi
-        console.error("❌ Gagal terhubung ke database MySQL:", error.message);
+        log.error("Gagal terhubung ke database MySQL: " + error.message);
         process.exit(1);
     } finally {
         // Selalu lepaskan koneksi kembali ke pool, baik sukses maupun gagal

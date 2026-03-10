@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const { google } = require('googleapis');
 const axios = require('axios');
+const { createLogger } = require('../logger.js');
+const log = createLogger('EmailBot');
 
 const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
 const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
@@ -12,8 +14,8 @@ const INTERVAL_CEK = parseInt(process.env.INTERVAL_CEK_MS) || 10000;
 const EMAIL_FILTER = 'is:unread (from:noreply@jago.com OR from:alerts@seabank.co.id)';
 
 if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN || !WEBHOOK_URL) {
-  console.error('FATAL ERROR: Variabel lingkungan tidak lengkap.');
-  console.error('Pastikan GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, dan WEBHOOK_URL ada di file .env');
+  log.error('FATAL ERROR: Variabel lingkungan tidak lengkap.');
+  log.error('Pastikan GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, dan WEBHOOK_URL ada di file .env');
   process.exit(1);
 }
 
@@ -63,25 +65,25 @@ function getEmailBody(payload) {
 async function sendWebhookNotification(subject, snippet, bodyObject) {
   const payload = { text: bodyObject.plain };
 
-  console.log(`   -> Mengirim webhook ke ${WEBHOOK_URL}...`);
+  log.info(`Mengirim webhook ke ${WEBHOOK_URL}...`);
   try {
     const response = await axios.post(WEBHOOK_URL, payload, {
       headers: { 'Content-Type': 'application/json' },
       timeout: 5000
     });
-    console.log(`   -> Webhook terkirim. Status: ${response.status}`);
+    log.info(`Webhook terkirim. Status: ${response.status}`);
   } catch (err) {
-    console.error(`   -> GAGAL mengirim webhook: ${err.message}`);
+    log.error(`GAGAL mengirim webhook: ${err.message}`);
     if (err.response) {
-      console.error(`   -> Respon Server Panel: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+      log.error(`Respon Server Panel: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
     } else {
-      console.error('   -> Server panel tidak merespon atau error jaringan.');
+      log.error('Server panel tidak merespon atau error jaringan.');
     }
   }
 }
 
 async function checkAndProcessEmails() {
-  console.log(`Mengecek email (${EMAIL_FILTER})...`);
+  log.info(`Mengecek email (${EMAIL_FILTER})...`);
   
   try {
     const listRes = await gmail.users.messages.list({
@@ -93,11 +95,11 @@ async function checkAndProcessEmails() {
     const messages = listRes.data.messages;
 
     if (!messages || messages.length === 0) {
-      console.log('Tidak ada email baru yang sesuai filter.');
+      log.info('Tidak ada email baru yang sesuai filter.');
       return;
     }
 
-    console.log(`DITEMUKAN ${messages.length} email baru, memproses...`);
+    log.info(`DITEMUKAN ${messages.length} email baru, memproses...`);
 
     for (const message of messages) {
       try {
@@ -113,7 +115,7 @@ async function checkAndProcessEmails() {
         const snippet = msgRes.data.snippet;
         const emailBody = getEmailBody(payload);
 
-        console.log(`[Email Ditemukan] Subjek: ${subject}`);
+        log.info(`[Email Ditemukan] Subjek: ${subject}`);
         
         await sendWebhookNotification(subject, snippet, emailBody);
         
@@ -122,28 +124,28 @@ async function checkAndProcessEmails() {
           id: message.id,
           requestBody: { removeLabelIds: ['UNREAD'] },
         });
-        console.log(`   -> Email ${message.id} telah ditandai sebagai "sudah diproses".`);
+        log.info(`Email ${message.id} telah ditandai sebagai "sudah diproses".`);
 
       } catch (emailErr) {
-        console.error(`Gagal memproses email ID: ${message.id}`, emailErr.message);
+        log.error(`Gagal memproses email ID: ${message.id} - ${emailErr.message}`);
       }
     }
 
   } catch (err) {
-    console.error('Error saat siklus pengecekan email:', err.message);
+    log.error('Error saat siklus pengecekan email: ' + err.message);
     if (err.response && err.response.data.error === 'invalid_grant') {
-      console.error('FATAL: Refresh token tidak valid atau dicabut. Hentikan bot.');
+      log.error('FATAL: Refresh token tidak valid atau dicabut. Hentikan bot.');
       process.exit(1);
     }
   }
 }
 
-console.log('=================================');
-console.log('   Gmail Webhook Bot Dimulai');
-console.log('=================================');
-console.log(`Target Webhook     : ${WEBHOOK_URL}`);
-console.log(`Interval Pengecekan: ${INTERVAL_CEK / 1000} detik`);
-console.log(`Filter Email       : ${EMAIL_FILTER}`);
+log.info('=================================');
+log.info('   Gmail Webhook Bot Dimulai');
+log.info('=================================');
+log.info(`Target Webhook     : ${WEBHOOK_URL}`);
+log.info(`Interval Pengecekan: ${INTERVAL_CEK / 1000} detik`);
+log.info(`Filter Email       : ${EMAIL_FILTER}`);
 
 const runCheckLoop = async () => {
   await checkAndProcessEmails();

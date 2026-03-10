@@ -1,5 +1,7 @@
 const axios = require('axios');
 const qs = require('qs');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Orkut');
 
 // Helper untuk membuat Timestamp (Unix Milliseconds)
 // Contoh output: 1762505037158
@@ -75,7 +77,7 @@ async function orderNoOtpOrkut(data, config) {
         }
 
     } catch (error) {
-        console.error("[Orkut Order] Error:", error.message);
+        log.error("Orkut Order Error: " + error.message);
         const msg = error.response?.data?.message || error.message || 'Gagal transaksi Orkut.';
         throw new Error(msg);
     }
@@ -144,7 +146,7 @@ async function checkStatusOrkut(trx_id_provider, config) {
         return response.data;
 
     } catch (error) {
-        console.error("[Orkut Status] Error:", error.message);
+        log.error("Orkut Status Error: " + error.message);
         throw new Error('Gagal cek status Orkut.');
     }
 }

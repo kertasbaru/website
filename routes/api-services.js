@@ -11,6 +11,8 @@ const { requestOtp, loginOtp, checkSession, checkQuotas, getProducts, buyPackage
 const { getAkrabStockFlaz, inviteAkrabMember } = require('../module/flaz.js');
 const { getProductKhfy, orderProductKhfy } = require('../module/khfy.js');
 const { getListProduct, orderProduct } = require('../module/kaje.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Services');
 
 const config = require('../config.js');
 
@@ -28,6 +30,7 @@ router.post('/xl/request-otp', isAuthenticated, async (req, res) => {
         const responseData = await requestOtp(formattedNumber, config);
         res.json(responseData);
     } catch (error) {
+        log.error('XL request OTP error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -39,15 +42,16 @@ router.post('/xl/login-otp', isAuthenticated, async (req, res) => {
     try {
         const responseData = await loginOtp(formattedNumber, otp, config);
         if (responseData && responseData.success) {
-            const user = await dbGet(`SELECT number_otp FROM users WHERE id = ?`, [req.session.userId]);
-            let numbers = JSON.parse(user.number_otp || '[]');
+            const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.session.userId]);
+            let numbers = JSON.parse(user.otp_numbers || '[]');
             if (!numbers.some(item => item.number === formattedNumber)) {
                 numbers.push({ number: formattedNumber });
-                await dbRun(`UPDATE users SET number_otp = ? WHERE id = ?`, [JSON.stringify(numbers), req.session.userId]);
+                await dbRun(`UPDATE users SET otp_numbers = ? WHERE id = ?`, [JSON.stringify(numbers), req.session.userId]);
             }
         }
         res.json(responseData);
     } catch (error) {
+        log.error('XL login OTP error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -57,13 +61,14 @@ router.post('/xl/check-session', isAuthenticated, async (req, res) => {
     const formattedNumber = ubahKe62(number);
     if (!cekNomorXl(formattedNumber)) return res.status(400).json({ success: false, message: 'Bukan nomor XL/Axis.' });
     try {
-        const user = await dbGet(`SELECT number_otp FROM users WHERE id = ?`, [req.session.userId]);
-        const numbers = JSON.parse(user.number_otp || '[]');
+        const user = await dbGet(`SELECT otp_numbers FROM users WHERE id = ?`, [req.session.userId]);
+        const numbers = JSON.parse(user.otp_numbers || '[]');
         if (!numbers.some(item => item.number === formattedNumber)) return res.status(403).json({ success: false, message: 'Nomor belum diautentikasi.' });
         
         const responseData = await checkSession(formattedNumber, config);
         res.json(responseData);
     } catch (error) {
+        log.error('XL check session error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -74,6 +79,7 @@ router.post('/xl/check-quotas', isAuthenticated, async (req, res) => {
         const quotaData = await checkQuotas(formattedNumber, config); 
         res.json(quotaData);
     } catch (error) {
+        log.error('XL check quotas error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -89,6 +95,7 @@ router.post('/xl/get-products', isAuthenticated, async (req, res) => {
         }
         res.json(productData);
     } catch (error) {
+        log.error('XL get products error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -128,6 +135,7 @@ router.post('/xl/buy-package', isAuthenticated, async (req, res) => {
         }
     } catch (error) {
         if (connection) await connection.rollback();
+        log.error('XL buy package error: ' + error.message);
         res.status(error.message === 'Saldo tidak mencukupi.' ? 402 : 500).json({ success: false, message: error.message });
     } finally {
         if (connection) connection.release();
@@ -150,6 +158,7 @@ router.post('/xl/list-product', isAuthenticated, async (req, res) => {
             res.json(productData);
         }
     } catch (error) {
+        log.error('XL list product error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -189,6 +198,7 @@ router.post('/xl/akrabv2/order', isAuthenticated, async (req, res) => {
         }
     } catch (error) {
         if(connection) await connection.rollback();
+        log.error('XL akrabv2 order error: ' + error.message);
         res.status(error.message === 'Saldo tidak mencukupi.' ? 402 : 500).json({ success: false, message: error.message });
     } finally {
         if(connection) connection.release();
@@ -230,6 +240,7 @@ router.post('/xl/akrab/invite', isAuthenticated, async (req, res) => {
         }
     } catch (error) {
         if(connection) await connection.rollback();
+        log.error('XL akrab invite error: ' + error.message);
         res.status(error.message === 'Saldo tidak mencukupi.' ? 402 : 500).json({ success: false, message: error.message });
     } finally {
         if(connection) connection.release();
@@ -251,6 +262,7 @@ router.post('/v3/xl/stock-khfy', isAuthenticated, async (req, res) => {
 
         res.json({ success: true, message: 'success', data: mergedData });
     } catch (error) {
+        log.error('KHFY stock error: ' + error.message);
         res.status(500).json({ success: false, message: error.message, data: null });
     }
 });
@@ -289,6 +301,7 @@ router.post('/xl/akrabv3/order', isAuthenticated, async (req, res) => {
         res.json({ success: true, data: { ref_id, trx_id: data.trxid || null, status: 'pending', message: apiResponse.msg, destination } });
     } catch (error) {
         if(connection) await connection.rollback();
+        log.error('XL akrabv3 order error: ' + error.message);
         res.status(error.message === 'Saldo tidak mencukupi.' ? 402 : 500).json({ success: false, message: error.message });
     } finally {
         if(connection) connection.release();
@@ -300,10 +313,11 @@ router.post('/no-otp/products', isAuthenticated, async (req, res) => {
     const { provider } = req.body;
     if (!provider) return res.status(400).json({ success: false, message: 'Provider diperlukan.' });
     try {
-        const products = await dbAll(`SELECT * FROM no_otp WHERE provider = ?`, [provider]);
+        const products = await dbAll(`SELECT * FROM products WHERE provider = ?`, [provider]);
         const productsWithFinalPrice = products.map(product => ({ ...product, final_price: product.amount }));
         res.json({ success: true, data: productsWithFinalPrice });
     } catch (error) {
+        log.error('No-OTP products error: ' + error.message);
         res.status(500).json({ success: false, message: 'Gagal mengambil produk: ' + error.message });
     }
 });
@@ -318,7 +332,7 @@ router.post('/no-otp/order', isAuthenticated, async (req, res) => {
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const product = await dbGet(`SELECT * FROM no_otp WHERE product_id = ?`, [code]);
+        const product = await dbGet(`SELECT * FROM products WHERE product_id = ?`, [code]);
         if (!product) throw new Error('Produk tidak ditemukan.');
 
         const price = product.amount > 0 ? product.amount + (config.UNTUNG || 0) : 0;
@@ -336,6 +350,7 @@ router.post('/no-otp/order', isAuthenticated, async (req, res) => {
 
     } catch (error) {
         if(connection) await connection.rollback();
+        log.error('No-OTP order error: ' + error.message);
         res.status(error.message === 'Saldo tidak mencukupi.' ? 402 : 500).json({ success: false, message: error.message });
     } finally {
         if(connection) connection.release();
@@ -354,6 +369,7 @@ router.post('/check-package', isAuthenticated, async (req, res) => {
             throw new Error(response.data.message || 'Gagal mengambil data dari provider.');
         }
     } catch (error) {
+        log.error('Check package error: ' + error.message);
         res.status(500).json({ success: false, message: error.response ? error.response.data.message : error.message });
     }
 });
@@ -363,6 +379,7 @@ router.post('/xl/akrab-stock', isAuthenticated, async (req, res) => {
         const stockData = await getAkrabStockFlaz(config);
         res.json(stockData);
     } catch (error) {
+        log.error('Akrab stock error: ' + error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 });

@@ -1,16 +1,18 @@
 const axios = require('axios'); // Library HTTP Request
 const { generateRandomString } = require('./function.js'); // Import helper untuk membuat Reff ID unik
+const { createLogger } = require('../logger.js');
+const log = createLogger('KHFY');
 
 // Fungsi 1: Mengambil Data Produk / Stok dari KHFY
 // Menggunakan endpoint KHFY2 yang dikonfigurasi di .env (biasanya untuk cek stok Akrab)
 async function getProductKhfy(config) {
     try {
         const response = await axios.get(config.URL.KHFY2);
-        console.log(response.data)
+        log.debug('getProductKhfy response received');
         return response.data;
 
     } catch (error) {
-        console.error("[getProductKhfy] Error:", error.message);
+        log.error("[getProductKhfy] Error: " + error.message);
         
         throw new Error(error.response?.data?.message || 'Gagal mengambil data dari provider.');
     }

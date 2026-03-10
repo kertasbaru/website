@@ -6,7 +6,9 @@ const { v4: uuidv4 } = require('uuid');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateOTP } = require('../module/function.js');
-const { sendOTP, verifOTP, sendResetLinkEmail } = require('../module/gmail.js'); // Atau sendMail.js jika pakai Resend
+const { sendOTP, verifOTP, sendResetLinkEmail } = require('../module/gmail.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Auth');
 
 const config = require('../config.js');
 const saltRounds = 10;
@@ -23,7 +25,7 @@ router.post('/register', async (req, res) => {
         const apikey = uuidv4();
         const otp = generateOTP();
 
-        await dbRun(`INSERT INTO users (username, phone, email, telegram, password, apikey, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+        await dbRun(`INSERT INTO users (username, phone, email, telegram, password, api_key, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)`, 
                     [username, phone, email, null, hash, apikey, 0]);
         
         req.session.unverifiedEmail = email;
@@ -50,7 +52,7 @@ router.post('/register', async (req, res) => {
                 return res.status(400).send('<script>alert("Username atau email sudah terdaftar dan terverifikasi."); window.location.href="/register";</script>');
             }
         }
-        console.error("Register error:", err);
+        log.error('Register error: ' + err.message);
         res.status(500).send('<script>alert("Terjadi kesalahan server."); window.location.href="/register";</script>');
     }
 });
@@ -82,7 +84,7 @@ router.post('/login', async (req, res) => {
         res.redirect('/dashboard');
 
     } catch (err) {
-        console.error("Login error:", err);
+        log.error('Login error: ' + err.message);
         res.status(500).send('<script>alert("Terjadi kesalahan server!"); window.location.href="/login";</script>');
     }
 });
@@ -90,13 +92,14 @@ router.post('/login', async (req, res) => {
 // --- Get User Data ---
 router.get('/user', isAuthenticated, async (req, res) => {
     try {
-        const user = await dbGet(`SELECT id, username, phone, email, telegram, balance, apikey, webhook FROM users WHERE id = ?`, [req.session.userId]);
+        const user = await dbGet(`SELECT id, username, phone, email, telegram, balance, api_key, webhook_url FROM users WHERE id = ?`, [req.session.userId]);
         if (!user) return res.status(404).json({ success: false, message: "User tidak ditemukan." });
 
         const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
         
         res.json({ ...user, isAdmin: isAdmin });
     } catch (err) {
+        log.error('Gagal mengambil data pengguna: ' + err.message);
         res.status(500).json({ success: false, message: 'Gagal mengambil data pengguna.' });
     }
 });
@@ -145,7 +148,7 @@ router.post('/auth/forgot-password', async (req, res) => {
         res.json({ success: true, message: 'Jika email terdaftar, link reset password akan dikirim.' });
     } catch (error) {
         if (connection) await connection.rollback();
-        console.error(error);
+        log.error('Forgot password error: ' + error.message);
         res.status(500).json({ success: false, message: 'Gagal mengirim email reset password.' });
     } finally {
         if (connection) connection.release();

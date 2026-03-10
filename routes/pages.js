@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const { isAuthenticated } = require('../middleware/auth.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Pages');
 
 // Memuat konfigurasi untuk pengecekan admin
 const config = require('../config.js');
@@ -13,27 +15,19 @@ const dbGet = async (sql, params = []) => {
 };
 
 // --- Fungsi Helper Render ---
-// Fungsi ini sangat penting untuk menghindari pengulangan kode.
-// Tugasnya:
-// 1. Ambil data user terbaru dari DB berdasarkan sesi.
-// 2. Cek apakah user tersebut adalah Admin.
-// 3. Render file view (HTML/EJS) dengan menyertakan objek 'user'.
 const renderWithUserData = async (req, res, view) => {
     try {
         const user = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.session.userId]);
         
-        // Jika user tidak ditemukan di DB (misal terhapus saat sesi masih aktif), paksa logout
         if (!user) return res.redirect('/login');
         
-        // Tentukan status admin
         const isAdmin = user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME;
         
-        // Render halaman dengan data user
         res.render(view, { 
             user: { ...user, isAdmin } 
         });
     } catch (error) {
-        console.error(`Error rendering page ${view}:`, error);
+        log.error(`Error rendering page ${view}: ${error.message}`);
         res.redirect('/login');
     }
 };

@@ -1,4 +1,6 @@
 const { Resend } = require('resend'); // Mengimpor library Resend
+const { createLogger } = require('../logger.js');
+const log = createLogger('SendMail');
 
 // Fungsi 1: Mengirim Kode OTP via Resend
 async function sendOTP(email, otp, config) {
@@ -32,7 +34,7 @@ async function sendOTP(email, otp, config) {
         return data;
 
     } catch (error) {
-        console.error('Error sending OTP email:', error);
+        log.error('Error sending OTP email: ' + error.message);
         throw new Error('Gagal mengirim email OTP.');
     }
 }
@@ -75,7 +77,7 @@ async function sendResetLinkEmail(email, token, config) {
         }
         return data;
     } catch (error) {
-        console.error('Error sending reset email:', error);
+        log.error('Error sending reset email: ' + error.message);
         throw new Error('Gagal mengirim email reset password.');
     }
 }

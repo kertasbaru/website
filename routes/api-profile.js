@@ -4,6 +4,8 @@ const pool = require('../database.js');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const { isAuthenticated } = require('../middleware/auth.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Profile');
 
 const saltRounds = 10;
 const dbRun = async (sql, params = []) => { const [result] = await pool.execute(sql, params); return result; };
@@ -16,6 +18,7 @@ router.post('/profile/update', isAuthenticated, async (req, res) => {
             [username, phone, email, telegramValue, req.session.userId]);
         res.json({ success: true, message: 'Profil berhasil diperbarui!' });
     } catch (err) {
+        log.error('Profile update error: ' + err.message);
         res.status(400).json({ success: false, message: 'Username atau email mungkin sudah digunakan.' });
     }
 });
@@ -26,9 +29,10 @@ router.post('/profile/update-webhook', isAuthenticated, async (req, res) => {
         return res.status(400).json({ success: false, message: 'URL webhook tidak valid. Harus diawali dengan http:// atau https://' });
     }
     try {
-        await dbRun(`UPDATE users SET webhook = ? WHERE id = ?`, [webhook, req.session.userId]);
+        await dbRun(`UPDATE users SET webhook_url = ? WHERE id = ?`, [webhook, req.session.userId]);
         res.json({ success: true, message: 'URL Webhook berhasil diperbarui!' });
     } catch (err) {
+        log.error('Update webhook error: ' + err.message);
         res.status(500).json({ success: false, message: 'Gagal memperbarui webhook.' });
     }
 });
@@ -63,7 +67,7 @@ router.post('/password/update', isAuthenticated, async (req, res) => {
 router.post('/apikey/regenerate', isAuthenticated, async (req, res) => {
     try {
         const newApiKey = uuidv4();
-        await dbRun(`UPDATE users SET apikey = ? WHERE id = ?`, [newApiKey, req.session.userId]);
+        await dbRun(`UPDATE users SET api_key = ? WHERE id = ?`, [newApiKey, req.session.userId]);
         res.json({ success: true, newApiKey });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Gagal membuat API Key baru.' });

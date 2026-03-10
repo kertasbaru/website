@@ -1,107 +1,129 @@
-const mysql = require('mysql2/promise'); // Menggunakan driver mysql2 dengan dukungan async/await
-const config = require('./config.js');   // Konfigurasi dari .env
-
-console.log('Memulai skrip setup database MySQL...');
+const mysql = require('mysql2/promise');
+const config = require('./config.js');
+const { createLogger } = require('./logger.js');
+const log = createLogger('SetupDB');
 
 const dbConfig = config.MYSQL;
 
-// 2. Definisikan semua query SQL untuk membuat tabel
-// Array ini berisi perintah SQL DDL (Data Definition Language)
+// =================================================================
+// Definisi Skema Database Profesional
+// =================================================================
 const createTableQueries = [
-    // Tabel 'users': Menyimpan data akun pengguna
+    // Tabel 'users': Data akun pengguna
     `
     CREATE TABLE IF NOT EXISTS \`users\` (
-      \`id\` INT PRIMARY KEY AUTO_INCREMENT,
-      \`username\` VARCHAR(255) UNIQUE NOT NULL,
-      \`phone\` VARCHAR(255),
+      \`id\` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      \`username\` VARCHAR(50) UNIQUE NOT NULL,
       \`email\` VARCHAR(255) UNIQUE NOT NULL,
-      \`telegram\` BIGINT NULL DEFAULT NULL,
-      \`password\` TEXT NOT NULL,
-      \`balance\` DECIMAL(15, 2) DEFAULT 0,   -- Saldo pengguna
-      \`apikey\` VARCHAR(255),                -- API Key untuk akses programatik
-      \`number_otp\` TEXT,                    -- Nomor OTP (jika ada fitur OTP khusus)
-      \`is_verified\` TINYINT(1) DEFAULT 0,   -- Status verifikasi akun
-      \`reset_token\` VARCHAR(255),           -- Token untuk reset password
-      \`reset_token_expires\` DATETIME,       -- Waktu kadaluarsa token reset
-      \`webhook\` TEXT                        -- URL Webhook pengguna
-    ) ENGINE=InnoDB;
+      \`phone\` VARCHAR(20) DEFAULT NULL,
+      \`telegram\` BIGINT DEFAULT NULL,
+      \`password\` VARCHAR(255) NOT NULL,
+      \`balance\` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+      \`api_key\` VARCHAR(36) DEFAULT NULL,
+      \`otp_numbers\` JSON DEFAULT NULL,
+      \`is_verified\` TINYINT(1) NOT NULL DEFAULT 0,
+      \`reset_token\` VARCHAR(255) DEFAULT NULL,
+      \`reset_token_expires\` DATETIME DEFAULT NULL,
+      \`webhook_url\` TEXT DEFAULT NULL,
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX \`idx_users_email\` (\`email\`),
+      INDEX \`idx_users_is_verified\` (\`is_verified\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `,
-    // Tabel 'deposits': Menyimpan riwayat permintaan isi saldo (Topup)
+
+    // Tabel 'deposits': Permintaan deposit saldo yang sedang menunggu
     `
     CREATE TABLE IF NOT EXISTS \`deposits\` (
-      \`top_up_id\` VARCHAR(255) PRIMARY KEY, -- ID unik topup
-      \`user_id\` INT NOT NULL,
-      \`amount\` DECIMAL(15, 2) NOT NULL,
-      \`status\` VARCHAR(255) NOT NULL,       -- PENDING, SUCCESS, CANCELED
-      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
-    ) ENGINE=InnoDB;
+      \`id\` VARCHAR(20) PRIMARY KEY,
+      \`user_id\` INT UNSIGNED NOT NULL,
+      \`amount\` DECIMAL(15,2) NOT NULL,
+      \`status\` VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+      INDEX \`idx_deposits_user_status\` (\`user_id\`, \`status\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `,
-    // Tabel 'topup_historys': Riwayat lengkap atau arsip topup
+
+    // Tabel 'deposit_history': Riwayat deposit yang sudah selesai (sukses/gagal)
     `
-    CREATE TABLE IF NOT EXISTS \`topup_historys\` (
-      \`id\` INT PRIMARY KEY AUTO_INCREMENT,
-      \`top_up_id\` VARCHAR(255) UNIQUE NOT NULL,
-      \`user_id\` INT NOT NULL,
-      \`amount\` DECIMAL(15, 2) NOT NULL,
-      \`status\` VARCHAR(255) NOT NULL,
-      \`updated_at\` TEXT NOT NULL,
-      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
-    ) ENGINE=InnoDB;
+    CREATE TABLE IF NOT EXISTS \`deposit_history\` (
+      \`id\` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      \`deposit_id\` VARCHAR(20) NOT NULL,
+      \`user_id\` INT UNSIGNED NOT NULL,
+      \`amount\` DECIMAL(15,2) NOT NULL,
+      \`status\` VARCHAR(20) NOT NULL,
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY \`uk_deposit_id\` (\`deposit_id\`),
+      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+      INDEX \`idx_dh_user_id\` (\`user_id\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `,
-    // Tabel 'transactions': Inti aplikasi, mencatat pembelian produk
+
+    // Tabel 'transactions': Pencatatan pembelian produk/layanan
     `
     CREATE TABLE IF NOT EXISTS \`transactions\` (
-      \`ref_id\` VARCHAR(255) PRIMARY KEY,    -- ID Referensi transaksi lokal
-      \`trx_id\` VARCHAR(255),                -- ID Transaksi dari provider (supplier)
-      \`user_id\` INT NOT NULL,
-      \`product_code\` VARCHAR(255) NOT NULL,
-      \`product_name\` TEXT,
-      \`payment_method\` VARCHAR(255),        -- Metode pembayaran (Saldo, QRIS, dll)
-      \`source\` VARCHAR(255) DEFAULT 'WEB',  -- Sumber transaksi (WEB/API)
-      \`message\` TEXT,                       -- Pesan respon (SN atau error)
-      \`destination\` VARCHAR(255) NOT NULL,  -- Nomor tujuan pengisian
-      \`price\` DECIMAL(15, 2) NOT NULL,      -- Harga modal/jual
-      \`status\` VARCHAR(255),                -- PROCESSING, SUKSES, GAGAL
-      \`serial_number\` TEXT,                 -- SN / Bukti transaksi
-      \`meta_data\` TEXT,                     -- Data tambahan JSON
-      \`payment_info\` TEXT,                  -- Info pembayaran gateway
-      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      \`updated_at\` DATETIME,
-      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
-    ) ENGINE=InnoDB;
+      \`ref_id\` VARCHAR(20) PRIMARY KEY,
+      \`trx_id\` VARCHAR(255) DEFAULT NULL,
+      \`user_id\` INT UNSIGNED NOT NULL,
+      \`product_code\` VARCHAR(100) NOT NULL,
+      \`product_name\` VARCHAR(255) DEFAULT NULL,
+      \`payment_method\` VARCHAR(50) DEFAULT NULL,
+      \`source\` VARCHAR(10) NOT NULL DEFAULT 'WEB',
+      \`destination\` VARCHAR(50) NOT NULL,
+      \`price\` DECIMAL(15,2) NOT NULL,
+      \`status\` VARCHAR(20) DEFAULT NULL,
+      \`serial_number\` TEXT DEFAULT NULL,
+      \`message\` TEXT DEFAULT NULL,
+      \`meta_data\` JSON DEFAULT NULL,
+      \`payment_info\` TEXT DEFAULT NULL,
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+      INDEX \`idx_trx_user_id\` (\`user_id\`),
+      INDEX \`idx_trx_trx_id\` (\`trx_id\`),
+      INDEX \`idx_trx_status\` (\`status\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `,
-    // Tabel 'settings': Menyimpan pengaturan website dinamis (key-value pair)
+
+    // Tabel 'settings': Pengaturan website dinamis (key-value)
     `
     CREATE TABLE IF NOT EXISTS \`settings\` (
-      \`setting_key\` VARCHAR(255) PRIMARY KEY,
-      \`setting_value\` TEXT
-    ) ENGINE=InnoDB;
+      \`setting_key\` VARCHAR(100) PRIMARY KEY,
+      \`setting_value\` TEXT DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `,
-    // Mengisi data default untuk pengumuman (INSERT IGNORE agar tidak error jika sudah ada)
+
+    // Data default pengumuman
     `
     INSERT IGNORE INTO \`settings\` (\`setting_key\`, \`setting_value\`) VALUES ('announcement', 'Selamat datang di WUZZSTORE! Semua layanan berjalan normal.');
     `,
-    // Tabel 'no_otp': Kemungkinan untuk layanan Virtual Number / OTP
+
+    // Tabel 'products': Katalog produk layanan (sebelumnya 'no_otp')
     `
-    CREATE TABLE IF NOT EXISTS \`no_otp\` (
-      \`id\` INT PRIMARY KEY AUTO_INCREMENT,
-      \`product_id\` INT NOT NULL,
-      \`product_name\` TEXT NOT NULL,
-      \`amount\` DECIMAL(15, 2) NOT NULL,
-      \`category\` TEXT NOT NULL,
-      \`provider\` TEXT NOT NULL,
-      \`description\` TEXT NOT NULL
-    ) ENGINE=InnoDB;
+    CREATE TABLE IF NOT EXISTS \`products\` (
+      \`id\` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      \`product_id\` INT UNSIGNED NOT NULL,
+      \`product_name\` VARCHAR(255) NOT NULL,
+      \`amount\` DECIMAL(15,2) NOT NULL,
+      \`category\` VARCHAR(100) NOT NULL,
+      \`provider\` VARCHAR(100) NOT NULL,
+      \`description\` TEXT NOT NULL,
+      \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY \`uk_product_id\` (\`product_id\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `
 ];
 
-// 3. Fungsi utama untuk menjalankan setup
+// =================================================================
+// Fungsi Utama Setup
+// =================================================================
 async function setupDatabase() {
     let connection;
     try {
-        // Langkah A: Buat koneksi awal tanpa memilih database spesifik
-        // Tujuannya untuk mengecek atau membuat database jika belum ada
+        // Langkah A: Buat koneksi untuk membuat database jika belum ada
         connection = await mysql.createConnection({
             host: dbConfig.HOST,
             user: dbConfig.USERNAME,
@@ -109,40 +131,39 @@ async function setupDatabase() {
             port: dbConfig.PORT
         });
 
-        // Membuat database jika belum eksis
-        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.DATABASE}\``);
-        console.log(`✅ Database '${dbConfig.DATABASE}' berhasil dibuat atau sudah ada.`);
-        await connection.end(); // Tutup koneksi awal
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+        log.info(`Database '${dbConfig.DATABASE}' berhasil dibuat atau sudah ada.`);
+        await connection.end();
 
-        // Langkah B: Buat Pool koneksi baru yang sudah memilih database tersebut
-        const pool = mysql.createPool(dbConfig);
+        // Langkah B: Koneksi ke database untuk membuat tabel
+        const pool = mysql.createPool({
+            host: dbConfig.HOST,
+            user: dbConfig.USERNAME,
+            password: dbConfig.PASSWORD,
+            database: dbConfig.DATABASE,
+            port: dbConfig.PORT
+        });
         const conn = await pool.getConnection();
-        console.log(`✅ Berhasil terhubung ke database '${dbConfig.DATABASE}'.`);
+        log.info(`Berhasil terhubung ke database '${dbConfig.DATABASE}'.`);
 
-        console.log('\nMembuat tabel di MySQL...');
-        // Loop untuk mengeksekusi setiap query CREATE TABLE dalam array
+        log.info('Membuat tabel...');
         for (const query of createTableQueries) {
             await conn.query(query);
-            
-            // Regex sederhana untuk mengambil nama tabel dari query agar log lebih rapi
             const tableNameMatch = query.match(/`(\w+)`/);
             if (tableNameMatch && tableNameMatch[1]) {
-                 console.log(` -> Tabel '${tableNameMatch[1]}' berhasil disiapkan.`);
+                log.info(` -> Tabel '${tableNameMatch[1]}' berhasil disiapkan.`);
             }
         }
-        
-        console.log('✅ Semua tabel berhasil disiapkan.');
 
-        // Bersihkan koneksi
+        log.info('Semua tabel berhasil disiapkan.');
+
         conn.release();
         await pool.end();
 
-        console.log('\n✨ Setup database selesai! ✨');
+        log.info('Setup database selesai!');
 
     } catch (error) {
-        console.error('❌ Terjadi kesalahan saat setup database:');
-        console.error(error.message);
-        // Pastikan koneksi ditutup jika terjadi error
+        log.error('Terjadi kesalahan saat setup database: ' + error.message);
         if (connection) {
             await connection.end();
         }
@@ -150,5 +171,4 @@ async function setupDatabase() {
     }
 }
 
-// Jalankan fungsi setup
 setupDatabase();

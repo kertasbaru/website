@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const { isAuthenticated, isAdmin } = require('../middleware/auth.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Admin');
 
 const dbAll = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows; };
 const dbRun = async (sql, params = []) => { const [result] = await pool.execute(sql, params); return result; };
@@ -86,11 +88,12 @@ router.post('/admin/no-otp/add', isAuthenticated, isAdmin, async (req, res) => {
     const { product_id, product_name, amount, category, provider, description } = req.body;
     if (!product_id || !product_name || !amount) return res.status(400).json({ success: false, message: 'Data wajib diisi.' });
     try {
-        const query = `INSERT INTO no_otp (product_id, product_name, amount, category, provider, description) VALUES (?, ?, ?, ?, ?, ?)`;
+        const query = `INSERT INTO products (product_id, product_name, amount, category, provider, description) VALUES (?, ?, ?, ?, ?, ?)`;
         await dbRun(query, [product_id, product_name, amount, category, provider, description]);
-        res.json({ success: true, message: 'Produk No OTP berhasil ditambahkan.' });
+        res.json({ success: true, message: 'Produk berhasil ditambahkan.' });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') return res.status(400).json({ success: false, message: 'Gagal: ID Produk sudah ada.' });
+        log.error('Add product error: ' + error.message);
         res.status(500).json({ success: false, message: 'Gagal menambahkan data: ' + error.message });
     }
 });

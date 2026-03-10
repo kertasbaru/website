@@ -1,6 +1,8 @@
 const { google } = require('googleapis'); // Library resmi Google API
 const pool = require('../database.js');   // Koneksi database
 const axios = require('axios');           // Diperlukan untuk fungsi emailReceiver
+const { createLogger } = require('../logger.js');
+const log = createLogger('Gmail');
 
 // Fungsi Helper: Melakukan otentikasi OAuth2 ke Google
 function getAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN) {
@@ -68,10 +70,10 @@ async function sendOTP(email, otp, config) {
       },
     });
     
-    console.log('Email berhasil terkirim! Message ID:', res.data.id);
+    log.info('Email berhasil terkirim! Message ID: ' + res.data.id);
     return res.data;
   } catch (err) {
-    console.error('Gagal mengirim email:', err.message);
+    log.error('Gagal mengirim email: ' + err.message);
     throw new Error('Gagal mengirim OTP');
   }
 }
@@ -112,7 +114,7 @@ async function sendResetLinkEmail(email, token, config) {
     });
     return res.data;
   } catch (err) {
-    console.log(`Gagal mengirim link reset password: ${err.message}`);
+    log.info(`Gagal mengirim link reset password: ${err.message}`);
     throw new Error('Gagal mengirim link reset password');
   }
 }
@@ -131,7 +133,7 @@ async function emailReceiver(config) {
     const messages = listRes.data.messages;
     
     if (!messages || messages.length === 0) {
-      console.log('Tidak ada email baru yang sesuai filter.');
+      log.info('Tidak ada email baru yang sesuai filter.');
       return;
     }
     

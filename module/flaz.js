@@ -1,4 +1,6 @@
 const axios = require('axios'); // Library untuk melakukan HTTP Request
+const { createLogger } = require('../logger.js');
+const log = createLogger('Flaz');
 
 // Fungsi 1: Mengambil stok produk "Akrab" dari Provider Flaz
 // Digunakan untuk mengetahui apakah layanan sedang tersedia sebelum user membeli

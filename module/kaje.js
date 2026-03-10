@@ -1,4 +1,6 @@
 const axios = require('axios');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Kaje');
 
 async function requestOtp(number, config) {
     try {
@@ -84,7 +86,7 @@ async function orderProduct(data, config) {
         const response = await axios.post(`${config.URL.KAJE}/service/order-product`, data, { 
             headers: { 'x-api-key': config.API.KAJE } 
         });
-        console.log(response.data)
+        log.debug('orderProduct response received');
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Gagal memesan produk.');

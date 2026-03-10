@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const { isAuthenticated } = require('../middleware/auth.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('History');
 
 const dbAll = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows; };
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
@@ -9,10 +11,10 @@ const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sq
 router.post('/history/topups', isAuthenticated, async (req, res) => {
     const { searchTerm, startDate, endDate } = req.body;
     try {
-        let query = `SELECT top_up_id, amount, status, updated_at FROM topup_historys WHERE user_id = ?`;
+        let query = `SELECT deposit_id, amount, status, updated_at FROM deposit_history WHERE user_id = ?`;
         const params = [req.session.userId];
         if (searchTerm) {
-            query += ` AND (top_up_id LIKE ? OR amount LIKE ? OR status LIKE ?)`;
+            query += ` AND (deposit_id LIKE ? OR amount LIKE ? OR status LIKE ?)`;
             params.push(`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`);
         }
         if (startDate && endDate) {
@@ -23,6 +25,7 @@ router.post('/history/topups', isAuthenticated, async (req, res) => {
         const topups = await dbAll(query, params);
         res.json({ success: true, data: topups });
     } catch (error) {
+        log.error('History topups error: ' + error.message);
         res.status(500).json({ success: false, message: 'Gagal mengambil riwayat top up.' });
     }
 });

@@ -4,6 +4,8 @@ const session = require('express-session');      // Middleware untuk manajemen s
 const MySQLStore = require('express-mysql-session')(session); // Menyimpan sesi di MySQL
 const config = require('./config.js');           // Konfigurasi dari .env
 const pool = require('./database.js');           // Koneksi database yang sudah dibuat sebelumnya
+const { createLogger } = require('./logger.js'); // Logger terpusat
+const log = createLogger('Server');
 
 // Impor File Rute (Routing)
 // Server akan mengarahkan request ke file-file ini berdasarkan URL-nya
@@ -45,5 +47,5 @@ app.use('/', webhookRoutes);    // Webhook biasanya di root atau path khusus tan
 
 // --- Jalankan Server ---
 app.listen(PORT, () => {
-    console.log(`🚀 Server WUZZSTORE berjalan di http://localhost:${PORT}`);
+    log.info(`🚀 Server WUZZSTORE berjalan di http://localhost:${PORT}`);
 });

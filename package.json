@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "setup": "node setupDatabase.js",
+    "migrate": "node migrateDatabase.js",
     "webhook": "node Webhook_topup/email_webhook_server.js"
   },
   "dependencies": {

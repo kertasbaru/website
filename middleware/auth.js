@@ -3,6 +3,8 @@ const pool = require('../database.js'); // Mengimpor koneksi database
 // Membaca konfigurasi dari .env
 // Ini diperlukan untuk mendapatkan kredensial ADMIN (Email & Username)
 const config = require('../config.js');
+const { createLogger } = require('../logger.js');
+const log = createLogger('Auth');
 
 // Fungsi Helper untuk mengambil satu baris data dari database
 // Ini membungkus pool.execute agar kode lebih bersih (tidak perlu array destructuring berulang)
@@ -40,6 +42,7 @@ const isAdmin = async (req, res, next) => {
         return res.status(403).json({ success: false, message: "Akses ditolak. Hanya untuk admin." });
     } catch (error) {
         // Error handling jika database bermasalah
+        log.error('Kesalahan server saat validasi admin: ' + error.message);
         return res.status(500).json({ success: false, message: "Kesalahan server saat validasi admin." });
     }
 };
