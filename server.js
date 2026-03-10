@@ -8,7 +8,6 @@ const { createLogger } = require('./logger.js'); // Logger terpusat
 const log = createLogger('Server');
 
 // Impor File Rute (Routing)
-const pageRoutes = require('./routes/pages.js');      // Menangani halaman fallback & logout
 const apiRoutes = require('./routes/api.js');         // Menangani API (Data JSON)
 const webhookRoutes = require('./routes/webhooks.js');// Menangani callback/webhook dari pihak ketiga
 

@@ -17,7 +17,7 @@ const dbGet = async (sql, params = []) => {
 // --- Fungsi Helper Render ---
 const renderWithUserData = async (req, res, view) => {
     try {
-        const user = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.session.userId]);
+        const user = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.userId]);
         
         if (!user) return res.redirect('/login');
         
@@ -101,7 +101,7 @@ router.get('/no-otp', isAuthenticated, (req, res) => renderWithUserData(req, res
 // --- Halaman Admin ---
 router.get('/admin', isAuthenticated, async (req, res) => {
     try {
-        const user = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.session.userId]);
+        const user = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.userId]);
         if (!user) return res.redirect('/login');
         
         // Cek manual kredensial admin
