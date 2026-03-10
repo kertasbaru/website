@@ -7,7 +7,7 @@ async function request(url, options = {}) {
   };
   const res = await fetch(`${BASE}${url}`, config);
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan');
+  if (!res.ok) throw new Error(data.message || `HTTP ${res.status}: ${res.statusText}`);
   return data;
 }
 

@@ -21,8 +21,8 @@ export default function Riwayat() {
     try {
       const data = await api.post('/api/history/topups', { searchTerm: search.topup, ...dates });
       setTopups(data.data || []);
-      setLoaded((p) => ({ ...p, topup: true }));
-    } catch {}
+      setLoaded((prev) => ({ ...prev, topup: true }));
+    } catch (err) { console.error('Fetch topups error:', err); }
     setLoadingTopups(false);
   };
 
@@ -31,8 +31,8 @@ export default function Riwayat() {
     try {
       const data = await api.post('/api/history/transactions', { searchTerm: search.trx, ...dates });
       setTransactions(data.data || []);
-      setLoaded((p) => ({ ...p, trx: true }));
-    } catch {}
+      setLoaded((prev) => ({ ...prev, trx: true }));
+    } catch (err) { console.error('Fetch transactions error:', err); }
     setLoadingTrx(false);
   };
 

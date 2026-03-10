@@ -71,7 +71,7 @@ export default function XlTembak() {
           setResultModal((prev) => ({ ...prev, status: data.status, message: data.message }));
           if (data.status === 'failed' || data.status === 'gagal') refreshUser();
         }
-      } catch {}
+      } catch (err) { console.error('Polling error:', err); }
     }, 3000);
   };
 

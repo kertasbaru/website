@@ -52,7 +52,7 @@ export default function XlAuth() {
     try {
       const data = await api.post('/api/xl/check-quotas', { number });
       if (data.success) setQuotas(data.data);
-    } catch {}
+    } catch (err) { console.error('Check quotas error:', err); }
   };
 
   return (
