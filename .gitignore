@@ -2,3 +2,4 @@
 node_modules
 github
 webhook_topup/.env
+client/node_modules

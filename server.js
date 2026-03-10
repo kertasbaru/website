@@ -8,17 +8,12 @@ const { createLogger } = require('./logger.js'); // Logger terpusat
 const log = createLogger('Server');
 
 // Impor File Rute (Routing)
-// Server akan mengarahkan request ke file-file ini berdasarkan URL-nya
-const pageRoutes = require('./routes/pages.js');      // Menangani halaman HTML (Dashboard, Login, dll)
+const pageRoutes = require('./routes/pages.js');      // Menangani halaman fallback & logout
 const apiRoutes = require('./routes/api.js');         // Menangani API (Data JSON)
 const webhookRoutes = require('./routes/webhooks.js');// Menangani callback/webhook dari pihak ketiga
 
 const app = express();
-// Menentukan port: Prioritas Environment Variable -> Config File -> Default 3000
 const PORT = config.PORT || 3000;
-
-// Mengatur EJS sebagai view engine untuk merender file .html/.ejs di folder views
-app.set('view engine', 'ejs');
 
 // Menyiapkan penyimpanan sesi di database MySQL
 const sessionStore = new MySQLStore({}, pool);
@@ -26,24 +21,39 @@ const sessionStore = new MySQLStore({}, pool);
 // --- Middleware ---
 app.use(express.json());                           // Mengizinkan server membaca data JSON dari request body
 app.use(express.urlencoded({ extended: true }));   // Mengizinkan server membaca data Form (POST)
-app.use(express.static(path.join(__dirname, 'public'))); // Mengatur folder 'public' untuk file CSS, JS, Gambar
 
 // Konfigurasi Sesi Login
 app.use(session({
-    secret: config.SECRET.JWT,    // Kunci rahasia untuk mengenkripsi sesi (dari .env)
-    store: sessionStore,          // Menyimpan data sesi di MySQL
-    resave: false,                // Tidak menyimpan ulang sesi jika tidak ada perubahan
-    saveUninitialized: false,     // Tidak membuat sesi kosong untuk pengunjung tanpa login
+    secret: config.SECRET.JWT,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
     cookie: { 
-        secure: false,            // Set true jika sudah menggunakan HTTPS
-        maxAge: 24 * 60 * 60 * 1000 // Durasi cookie sesi: 24 jam
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-// --- Gunakan Rute ---
-app.use('/', pageRoutes);       // Semua akses root (misal: /login, /dashboard) masuk ke pageRoutes
-app.use('/api', apiRoutes);     // Semua akses berawalan /api (misal: /api/produk) masuk ke apiRoutes
-app.use('/', webhookRoutes);    // Webhook biasanya di root atau path khusus tanpa prefix /api
+// --- Gunakan Rute API & Webhook ---
+app.use('/api', apiRoutes);
+app.use('/', webhookRoutes);
+
+// --- Rute Logout (perlu sesi) ---
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.redirect('/login');
+    });
+});
+
+// --- Serve React Frontend ---
+const clientDistPath = path.join(__dirname, 'client', 'dist');
+app.use(express.static(clientDistPath));
+
+// Semua rute lain -> React app (client-side routing)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 // --- Jalankan Server ---
 app.listen(PORT, () => {

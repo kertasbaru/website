@@ -15,12 +15,11 @@ const dbGet = async (sql, params = []) => {
 
 // Middleware: Mengecek apakah user sudah Login
 const isAuthenticated = (req, res, next) => {
-    // Mengecek apakah sesi ada dan memiliki userId
     if (req.session && req.session.userId) {
-        return next(); // Lanjut ke proses berikutnya (halaman yang dituju)
+        return next();
     }
-    // Jika tidak login, lempar kembali ke halaman login
-    res.redirect('/login');
+    // Return JSON untuk API routes
+    res.status(401).json({ success: false, message: "Sesi tidak valid. Silakan login kembali." });
 };
 
 // Middleware: Mengecek apakah user adalah ADMIN

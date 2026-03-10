@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
         req.session.otpExpires = Date.now() + 10 * 60 * 1000;
 
         await sendOTP(email, otp, config);
-        res.redirect('/verify-otp');
+        res.json({ success: true, message: 'OTP telah dikirim ke email Anda.', email });
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             const existingUser = await dbGet('SELECT is_verified, email FROM users WHERE email = ? OR username = ?', [email, username]);
@@ -44,16 +44,16 @@ router.post('/register', async (req, res) => {
                     req.session.otp = otp;
                     req.session.otpExpires = Date.now() + 10 * 60 * 1000;
                     await sendOTP(existingUser.email, otp, config);
-                    return res.redirect('/verify-otp');
+                    return res.json({ success: true, message: 'OTP telah dikirim ulang.', email: existingUser.email });
                 } catch (sendError) {
-                    return res.status(500).send('<script>alert("Gagal mengirim ulang OTP."); window.location.href="/register";</script>');
+                    return res.status(500).json({ success: false, message: 'Gagal mengirim ulang OTP.' });
                 }
             } else {
-                return res.status(400).send('<script>alert("Username atau email sudah terdaftar dan terverifikasi."); window.location.href="/register";</script>');
+                return res.status(400).json({ success: false, message: 'Username atau email sudah terdaftar dan terverifikasi.' });
             }
         }
         log.error('Register error: ' + err.message);
-        res.status(500).send('<script>alert("Terjadi kesalahan server."); window.location.href="/register";</script>');
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan server.' });
     }
 });
 
@@ -63,12 +63,12 @@ router.post('/login', async (req, res) => {
     try {
         const user = await dbGet(`SELECT * FROM users WHERE username = ?`, [username]);
         if (!user) {
-            return res.status(400).send('<script>alert("Username tidak ditemukan!"); window.location.href="/login";</script>');
+            return res.status(400).json({ success: false, message: 'Username tidak ditemukan!' });
         }
 
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
-            return res.status(401).send('<script>alert("Password salah!"); window.location.href="/login";</script>');
+            return res.status(401).json({ success: false, message: 'Password salah!' });
         }
 
         if (user.is_verified === 0) {
@@ -77,15 +77,15 @@ router.post('/login', async (req, res) => {
             req.session.otp = otp;
             req.session.otpExpires = Date.now() + 10 * 60 * 1000;
             await sendOTP(user.email, otp, config);
-            return res.redirect('/verify-otp');
+            return res.json({ success: true, needVerification: true, message: 'Akun belum diverifikasi. OTP telah dikirim.', email: user.email });
         }
 
         req.session.userId = user.id;
-        res.redirect('/dashboard');
+        res.json({ success: true, message: 'Login berhasil!' });
 
     } catch (err) {
         log.error('Login error: ' + err.message);
-        res.status(500).send('<script>alert("Terjadi kesalahan server!"); window.location.href="/login";</script>');
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan server!' });
     }
 });
 
