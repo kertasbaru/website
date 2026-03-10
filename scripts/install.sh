@@ -91,7 +91,6 @@ function setup_web() {
     fi
     cd /root/wuzzstore-project
     npm install             # Install library dari package.json
-    cd email                # Masuk ke folder email (jika ada logika spesifik disana)
     print_success "Dependensi proyek terinstal"
 
     # Menjalankan aplikasi menggunakan PM2
@@ -99,7 +98,7 @@ function setup_web() {
     # Menjalankan server utama dalam mode cluster (max core)
     pm2 start /root/wuzzstore-project/server.js -i max
     # Menjalankan service webhook email
-    pm2 start /root/wuzzstore-project/webhook_topup/email_webhook_server.js --name gmail
+    pm2 start /root/wuzzstore-project/scripts/email-webhook.js --name gmail
     pm2 save                # Menyimpan list proses agar jalan saat restart
     pm2 startup             # Membuat script startup boot
     print_success "Aplikasi berjalan dengan PM2"

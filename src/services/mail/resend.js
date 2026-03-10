@@ -82,7 +82,7 @@ async function sendResetLinkEmail(email, token, config) {
     }
 }
 
-// Fungsi 3: Verifikasi OTP (diimpor dari module/function.js)
+// Fungsi 3: Verifikasi OTP (diimpor dari utils/helpers.js)
 const { verifOTP } = require('../../utils/helpers');
 
 module.exports = { sendOTP, verifOTP, sendResetLinkEmail };

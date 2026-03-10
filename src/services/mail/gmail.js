@@ -172,7 +172,7 @@ async function emailReceiver(config) {
   }
 }
 
-// Fungsi 4: Verifikasi OTP (diimpor dari module/function.js)
+// Fungsi 4: Verifikasi OTP (diimpor dari utils/helpers.js)
 const { verifOTP } = require('../../utils/helpers');
 
 module.exports = {
