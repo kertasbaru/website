@@ -118,7 +118,7 @@ router.get('/deposit/detailsv2/:topUpId', isAuthenticated, async (req, res) => {
 });
 
 // --- Cek Status & Batalkan ---
-router.get('/deposit/status/:topUpId', isAuthenticated, async (req, res) => {
+const checkDepositStatusHandler = async (req, res) => {
     const { topUpId } = req.params;
     try {
         let row = await dbGet(`SELECT status FROM deposit_history WHERE deposit_id = ? AND user_id = ?`, [topUpId, req.session.userId]);
@@ -130,21 +130,10 @@ router.get('/deposit/status/:topUpId', isAuthenticated, async (req, res) => {
         log.error('Get deposit status error: ' + err.message);
         res.status(500).json({ message: "Server error." });
     }
-});
+};
 
-router.get('/deposit/statusv2/:topUpId', isAuthenticated, async (req, res) => {
-    const { topUpId } = req.params;
-    try {
-        let row = await dbGet(`SELECT status FROM deposit_history WHERE deposit_id = ? AND user_id = ?`, [topUpId, req.session.userId]);
-        if (row) return res.json({ status: row.status });
-        row = await dbGet(`SELECT status FROM deposits WHERE id = ? AND user_id = ?`, [topUpId, req.session.userId]);
-        if (row) return res.json({ status: row.status });
-        return res.status(404).json({ message: "Deposit tidak ditemukan." });
-    } catch (err) {
-        log.error('Get deposit statusv2 error: ' + err.message);
-        res.status(500).json({ message: "Server error." });
-    }
-});
+router.get('/deposit/status/:topUpId', isAuthenticated, checkDepositStatusHandler);
+router.get('/deposit/statusv2/:topUpId', isAuthenticated, checkDepositStatusHandler);
 
 // Pembatalan Deposit
 const cancelDepositHandler = async (req, res) => {

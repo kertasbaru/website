@@ -46,7 +46,6 @@ router.post('/admin/table-data/:tableName', isAuthenticated, isAdmin, async (req
         } else {
           query += ` ORDER BY \`${primaryKeyColumn}\` DESC LIMIT 200`;
         }
-        // query += ` ORDER BY \`${primaryKeyColumn}\``;
         const [data] = await connection.execute(query, params);
         res.json({ success: true, columns: columnNames, data: data, primaryKey: primaryKeyColumn });
     } catch (error) {

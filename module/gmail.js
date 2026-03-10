@@ -1,5 +1,4 @@
 const { google } = require('googleapis'); // Library resmi Google API
-const pool = require('../database.js');   // Koneksi database
 const axios = require('axios');           // Diperlukan untuk fungsi emailReceiver
 const { createLogger } = require('../logger.js');
 const log = createLogger('Gmail');
@@ -173,31 +172,8 @@ async function emailReceiver(config) {
   }
 }
 
-// Fungsi 4: Verifikasi Logika OTP
-function verifOTP(userOTP, session) {
-    // Cek apakah ada sesi OTP
-    if (!session.otp || !session.otpExpires) {
-        return { success: false, message: 'Tidak ada permintaan OTP yang aktif. Silakan kirim ulang.' };
-    }
-
-    // Cek kadaluwarsa (10 menit)
-    if (Date.now() > session.otpExpires) {
-        delete session.otp;
-        delete session.otpExpires;
-        return { success: false, message: 'Kode OTP telah kedaluwarsa. Silakan kirim ulang.' };
-    }
-
-    // Cek kecocokan kode
-    if (userOTP !== session.otp) {
-        return { success: false, message: 'Kode OTP salah.' };
-    }
-
-    // Hapus OTP dari sesi jika berhasil (One Time Use)
-    delete session.otp;
-    delete session.otpExpires;
-
-    return { success: true, message: 'OTP berhasil diverifikasi.' };
-}
+// Fungsi 4: Verifikasi OTP (diimpor dari module/function.js)
+const { verifOTP } = require('./function.js');
 
 module.exports = {
   sendOTP,

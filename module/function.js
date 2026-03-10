@@ -72,4 +72,31 @@ function maskString(str) {
     return maskedPart + lastFour;
 }
 
-module.exports = { generateRandomString, cekNomorXl, ubahKe62, ubahKe0, generateOTP, maskString };
+module.exports = { generateRandomString, cekNomorXl, ubahKe62, ubahKe0, generateOTP, maskString, verifOTP };
+
+// Fungsi: Verifikasi Logika OTP
+// Mengecek kecocokan kode OTP yang diinput user dengan yang tersimpan di sesi
+function verifOTP(userOTP, session) {
+    // Cek apakah ada sesi OTP
+    if (!session.otp || !session.otpExpires) {
+        return { success: false, message: 'Tidak ada permintaan OTP yang aktif. Silakan kirim ulang.' };
+    }
+
+    // Cek kadaluwarsa (10 menit)
+    if (Date.now() > session.otpExpires) {
+        delete session.otp;
+        delete session.otpExpires;
+        return { success: false, message: 'Kode OTP telah kedaluwarsa. Silakan kirim ulang.' };
+    }
+
+    // Cek kecocokan kode
+    if (userOTP !== session.otp) {
+        return { success: false, message: 'Kode OTP salah.' };
+    }
+
+    // Hapus OTP dari sesi jika berhasil (One Time Use)
+    delete session.otp;
+    delete session.otpExpires;
+
+    return { success: true, message: 'OTP berhasil diverifikasi.' };
+}

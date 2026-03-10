@@ -82,30 +82,7 @@ async function sendResetLinkEmail(email, token, config) {
     }
 }
 
-// Fungsi 3: Verifikasi Logika OTP (Sama seperti di gmail.js)
-function verifOTP(userOTP, session) {
-    // Cek keberadaan sesi OTP
-    if (!session.otp || !session.otpExpires) {
-        return { success: false, message: 'Tidak ada permintaan OTP yang aktif. Silakan kirim ulang.' };
-    }
-
-    // Cek waktu kedaluwarsa
-    if (Date.now() > session.otpExpires) {
-        delete session.otp;
-        delete session.otpExpires;
-        return { success: false, message: 'Kode OTP telah kedaluwarsa. Silakan kirim ulang.' };
-    }
-
-    // Cek kesesuaian kode
-    if (userOTP !== session.otp) {
-        return { success: false, message: 'Kode OTP salah.' };
-    }
-
-    // Bersihkan sesi setelah sukses
-    delete session.otp;
-    delete session.otpExpires;
-
-    return { success: true, message: 'OTP berhasil diverifikasi.' };
-}
+// Fungsi 3: Verifikasi OTP (diimpor dari module/function.js)
+const { verifOTP } = require('./function.js');
 
 module.exports = { sendOTP, verifOTP, sendResetLinkEmail };

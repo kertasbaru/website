@@ -41,6 +41,10 @@ const config = {
         SENDER: process.env.GMAIL_SENDER || '',
         RECEIVER: process.env.GMAIL_RECEIVER || ''
     },
+    RESEND: {
+        API_KEY: process.env.RESEND_API_KEY || '',
+        DOMAIN: process.env.RESEND_DOMAIN || ''
+    },
     DOMAIN: process.env.DOMAIN || '',
     PORT: process.env.PORT || 3000,
     JAGO: process.env.JAGO || '',

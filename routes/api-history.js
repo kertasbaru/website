@@ -48,6 +48,7 @@ router.post('/history/transactions', isAuthenticated, async (req, res) => {
         const transactions = await dbAll(query, params);
         res.json({ success: true, data: transactions });
     } catch (error) {
+        log.error('History transactions error: ' + error.message);
         res.status(500).json({ success: false, message: 'Gagal mengambil riwayat transaksi.' });
     }
 });
@@ -59,6 +60,7 @@ router.get('/transaction/status/:ref_id', isAuthenticated, async (req, res) => {
         if (!transaction) return res.status(404).json({ success: false, message: 'Transaksi tidak ditemukan.' });
         res.json({ success: true, ...transaction });
     } catch (error) {
+        log.error('Transaction status error: ' + error.message);
         res.status(500).json({ success: false, message: 'Server error.' });
     }
 });
