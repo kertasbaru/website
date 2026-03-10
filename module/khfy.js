@@ -2,7 +2,7 @@ const axios = require('axios'); // Library HTTP Request
 const { generateRandomString } = require('./function.js'); // Import helper untuk membuat Reff ID unik
 
 // Fungsi 1: Mengambil Data Produk / Stok dari KHFY
-// Menggunakan endpoint KHFY2 yang dikonfigurasi di .vars.json (biasanya untuk cek stok Akrab)
+// Menggunakan endpoint KHFY2 yang dikonfigurasi di .env (biasanya untuk cek stok Akrab)
 async function getProductKhfy(config) {
     try {
         const response = await axios.get(config.URL.KHFY2);

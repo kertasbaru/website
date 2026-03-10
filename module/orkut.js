@@ -10,7 +10,7 @@ function getFormattedTime() {
 /**
  * Melakukan Order ke OrderKuota (Orkut)
  * @param {Object} data - { code, destination, ref_id }
- * @param {Object} config - Config global (.vars.json)
+ * @param {Object} config - Config global (.env)
  */
 async function orderNoOtpOrkut(data, config) {
     const { code, destination, ref_id } = data; // Pastikan ref_id diambil dari data

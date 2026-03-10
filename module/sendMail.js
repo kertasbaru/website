@@ -2,7 +2,7 @@ const { Resend } = require('resend'); // Mengimpor library Resend
 
 // Fungsi 1: Mengirim Kode OTP via Resend
 async function sendOTP(email, otp, config) {
-    // Menginisialisasi klien Resend dengan API Key dari .vars.json
+    // Menginisialisasi klien Resend dengan API Key dari .env
     const resend = new Resend(config.RESEND.API_KEY);
 
     try {

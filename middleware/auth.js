@@ -1,10 +1,8 @@
 const pool = require('../database.js'); // Mengimpor koneksi database
-const fs = require('fs');               // Modul File System
-const path = require('path');           // Modul Path
 
-// Membaca konfigurasi .vars.json (naik satu level folder '..')
+// Membaca konfigurasi dari .env
 // Ini diperlukan untuk mendapatkan kredensial ADMIN (Email & Username)
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 
 // Fungsi Helper untuk mengambil satu baris data dari database
 // Ini membungkus pool.execute agar kode lebih bersih (tidak perlu array destructuring berulang)
@@ -33,7 +31,7 @@ const isAdmin = async (req, res, next) => {
         // Ambil data user dari database berdasarkan ID sesi
         const user = await dbGet(`SELECT email, username FROM users WHERE id = ?`, [req.session.userId]);
         
-        // Bandingkan data user dengan data ADMIN di .vars.json
+        // Bandingkan data user dengan data ADMIN di .env
         if (user && user.email === config.ADMIN.EMAIL && user.username === config.ADMIN.USERNAME) {
             return next(); // User valid sebagai Admin, silakan lanjut
         }

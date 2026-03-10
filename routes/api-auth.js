@@ -3,14 +3,12 @@ const router = express.Router();
 const pool = require('../database.js');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-const path = require('path');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateOTP } = require('../module/function.js');
 const { sendOTP, verifOTP, sendResetLinkEmail } = require('../module/gmail.js'); // Atau sendMail.js jika pakai Resend
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 const saltRounds = 10;
 
 // Helper DB

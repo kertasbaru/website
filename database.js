@@ -1,25 +1,6 @@
 // Mengimpor library yang dibutuhkan
 const mysql = require('mysql2/promise'); // Driver MySQL yang mendukung async/await (promise)
-const fs = require('fs');                // Modul File System untuk membaca file
-const path = require('path');            // Modul Path untuk menangani path direktori
-
-let config = {};
-try {
-    // Menentukan lokasi file .vars.json (berada di folder yang sama dengan script ini)
-    const configPath = path.join(__dirname, '.vars.json');
-    
-    // Membaca file .vars.json secara sinkron dan mengubahnya menjadi objek JavaScript
-    config = JSON.parse(fs.readFileSync(configPath));
-    
-    // Validasi: Memastikan konfigurasi MYSQL ada di dalam file
-    if (!config.MYSQL) {
-        throw new Error('Konfigurasi MYSQL tidak ditemukan di dalam .vars.json.');
-    }
-} catch (error) {
-    // Jika terjadi error saat membaca config, tampilkan pesan dan hentikan program
-    console.error('❌ Gagal membaca konfigurasi:', error.message);
-    process.exit(1);
-}
+const config = require('./config.js');   // Konfigurasi dari .env
 
 // Mengambil objek konfigurasi spesifik untuk database
 const dbConfig = config.MYSQL;

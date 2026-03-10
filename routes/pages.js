@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
-const fs = require('fs');
-const path = require('path');
 const { isAuthenticated } = require('../middleware/auth.js');
 
 // Memuat konfigurasi untuk pengecekan admin
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 
 // Helper Database: Ambil satu baris data
 const dbGet = async (sql, params = []) => {

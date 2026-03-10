@@ -1,8 +1,8 @@
 const express = require('express');              // Framework web server utama
 const path = require('path');                    // Utilitas untuk menangani path file/direktori
-const fs = require('fs');                        // Utilitas untuk membaca file sistem
 const session = require('express-session');      // Middleware untuk manajemen sesi login
 const MySQLStore = require('express-mysql-session')(session); // Menyimpan sesi di MySQL
+const config = require('./config.js');           // Konfigurasi dari .env
 const pool = require('./database.js');           // Koneksi database yang sudah dibuat sebelumnya
 
 // Impor File Rute (Routing)
@@ -11,21 +11,9 @@ const pageRoutes = require('./routes/pages.js');      // Menangani halaman HTML 
 const apiRoutes = require('./routes/api.js');         // Menangani API (Data JSON)
 const webhookRoutes = require('./routes/webhooks.js');// Menangani callback/webhook dari pihak ketiga
 
-// --- Konfigurasi ---
-let config = {};
-try {
-    // Membaca file konfigurasi rahasia (.vars.json)
-    config = JSON.parse(fs.readFileSync(path.join(__dirname, '.vars.json')));
-    console.log("✅ Berhasil memuat konfigurasi dari .vars.json");
-} catch (error) {
-    // Error fatal jika config tidak ada, karena server butuh password DB & API Key
-    console.error("❌ FATAL: File .vars.json tidak ditemukan atau tidak valid.");
-    process.exit(1);
-}
-
 const app = express();
 // Menentukan port: Prioritas Environment Variable -> Config File -> Default 3000
-const PORT = process.env.PORT || config.PORT || 3000;
+const PORT = config.PORT || 3000;
 
 // Mengatur EJS sebagai view engine untuk merender file .html/.ejs di folder views
 app.set('view engine', 'ejs');
@@ -40,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // Mengatur folder 'pub
 
 // Konfigurasi Sesi Login
 app.use(session({
-    secret: config.SECRET.JWT,    // Kunci rahasia untuk mengenkripsi sesi (dari .vars.json)
+    secret: config.SECRET.JWT,    // Kunci rahasia untuk mengenkripsi sesi (dari .env)
     store: sessionStore,          // Menyimpan data sesi di MySQL
     resave: false,                // Tidak menyimpan ulang sesi jika tidak ada perubahan
     saveUninitialized: false,     // Tidak membuat sesi kosong untuk pengunjung tanpa login

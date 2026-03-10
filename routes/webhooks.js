@@ -2,13 +2,11 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 const { getTransactionInfo: getTransactionInfoKaje } = require('../module/kaje.js');
 const { getTransactionInfoFlaz } = require('../module/flaz.js');
 
 // --- Konfigurasi ---
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 
 // --- Helper Database ---
 const dbGet = async (sql, params = []) => {

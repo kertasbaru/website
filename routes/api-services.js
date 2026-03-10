@@ -12,7 +12,7 @@ const { getAkrabStockFlaz, inviteAkrabMember } = require('../module/flaz.js');
 const { getProductKhfy, orderProductKhfy } = require('../module/khfy.js');
 const { getListProduct, orderProduct } = require('../module/kaje.js');
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };

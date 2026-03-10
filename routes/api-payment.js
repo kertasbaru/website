@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database.js');
-const fs = require('fs');
-const path = require('path');
 
 const { isAuthenticated } = require('../middleware/auth.js');
 const { generateDynamicQris } = require('../module/qris.js');
 const { generateRandomString } = require('../module/function.js');
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.vars.json')));
+const config = require('../config.js');
 
 // Helper DB
 const dbGet = async (sql, params = []) => { const [rows] = await pool.execute(sql, params); return rows[0]; };
