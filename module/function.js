@@ -72,8 +72,6 @@ function maskString(str) {
     return maskedPart + lastFour;
 }
 
-module.exports = { generateRandomString, cekNomorXl, ubahKe62, ubahKe0, generateOTP, maskString, verifOTP };
-
 // Fungsi: Verifikasi Logika OTP
 // Mengecek kecocokan kode OTP yang diinput user dengan yang tersimpan di sesi
 function verifOTP(userOTP, session) {
@@ -100,3 +98,5 @@ function verifOTP(userOTP, session) {
 
     return { success: true, message: 'OTP berhasil diverifikasi.' };
 }
+
+module.exports = { generateRandomString, cekNomorXl, ubahKe62, ubahKe0, generateOTP, maskString, verifOTP };
